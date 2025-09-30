@@ -67,11 +67,11 @@ body { font-family: Arial; margin: 0; background: #f4f6f9; }
 form { max-width:600px; margin:auto; padding:20px; background:#fff; border:1px solid #ccc; border-radius:10px; }
 label { font-weight:bold; margin-top:10px; display:block; }
 select, input { width:100%; margin-bottom:10px; padding:8px; }
-.btn { padding:10px; background:green; color:#fff; border:none; cursor:pointer; border-radius:5px; }
-.btn:hover { background:darkgreen; }
+.btn { padding:10px; background:#00bfff; color:#fff; border:none; cursor:pointer; border-radius:5px; }
+.btn:hover { background:#2980b9; }
 table { width:90%; margin:30px auto; border-collapse:collapse; background:#fff; }
 th, td { border:1px solid #ccc; padding:8px; text-align:center; }
-th { background:#f4f4f4; }
+th { background:#00bfff; }
 
 </style>
 </head>

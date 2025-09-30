@@ -47,8 +47,8 @@ if (!$result) {
         .container { margin-left: 240px; padding: 20px; flex: 1; }
         table { width: 100%; border-collapse: collapse; margin-top: 15px; background: #fff; border-radius: 8px; overflow: hidden; }
         table th, table td { border: 1px solid #ddd; padding: 10px; text-align: center; }
-        table th { background: #007bff; }
-        .btn, .btn-sm { text-decoration: none; padding: 6px 12px; border-radius: 4px; background: #3498db; color: white; }
+        table th { background: #00bfff; }
+        .btn, .btn-sm { text-decoration: none; padding: 6px 12px; border-radius: 4px; background: #00bfff; color: white; }
         .btn:hover, .btn-sm:hover { background: #2980b9; }
         .btn-sm.danger { background: #e74c3c; }
         .btn-sm.danger:hover { background: #c0392b; }

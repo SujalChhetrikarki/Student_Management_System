@@ -117,7 +117,7 @@ $classes  = $conn->query("SELECT class_id, class_name FROM classes");
         left: 220px;
         right: 0;
         height: 80px;
-        background: #007bff;
+        background: #00bfff;
         color: #fff;
         display: flex;
         align-items: center;
@@ -152,7 +152,7 @@ $classes  = $conn->query("SELECT class_id, class_name FROM classes");
 
     form label { display: block; margin-top: 10px; font-weight: bold; }
     form input, form select { width: 100%; padding: 10px; margin-top: 5px; border-radius: 5px; border: 1px solid #ccc; }
-    button { width: 100%; padding: 12px; margin-top: 20px; background: #007bff; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; }
+    button { width: 100%; padding: 12px; margin-top: 20px; background: #00bfff; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; }
     button:hover { background: #0056b3; }
 
     .success { color: green; margin-bottom: 15px; }

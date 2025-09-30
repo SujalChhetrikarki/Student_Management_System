@@ -53,9 +53,9 @@ body { font-family: Arial, sans-serif; margin: 0; background: #f4f6f9; }
 h2 { margin-top: 0; }
 table { border-collapse: collapse; width: 100%; background: #fff; }
 th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
-th { background: #007bff; color: #fff; }
-.btn { padding: 8px 14px; background: green; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
-.btn:hover { background: darkgreen; }
+th { background: #00bfff; color: #fff; }
+.btn { padding: 8px 14px; background: #00bfff; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+.btn:hover { background: #0056b3; }
 </style>
 </head>
 <body>

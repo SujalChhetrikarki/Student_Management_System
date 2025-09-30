@@ -28,8 +28,8 @@ if ($result && $result->num_rows > 0) {
         .container {max-width:600px; margin:30px auto; background:#fff; padding:20px; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,0.2);}
         h2 {text-align:center; margin-bottom:20px;}
         input, select {width:100%; padding:10px; margin:8px 0; border:1px solid #ccc; border-radius:5px;}
-        button {padding:10px 20px; background:#28a745; color:#fff; border:none; border-radius:5px; cursor:pointer;}
-        button:hover {background:#218838;}
+        button {padding:10px 20px; background:#00bfff; color:#fff; border:none; border-radius:5px; cursor:pointer;}
+        button:hover {background:#0056b3;}
         .msg {text-align:center; margin-bottom:15px;}
         .error {color:red;}
         .success {color:green;}

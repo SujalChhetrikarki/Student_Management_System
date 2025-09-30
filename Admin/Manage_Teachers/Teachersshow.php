@@ -63,8 +63,8 @@ if (!$result) {
         h1 { margin-top: 0; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #fff; }
         th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
-        th { background: #007bff; color: #fff; }
-        a.btn { padding: 5px 10px; background: #007bff; color: #fff; text-decoration: none; border-radius: 5px; }
+        th { background: #00bfff; color: #fff; }
+        a.btn { padding: 5px 10px; background: #00bfff; color: #fff; text-decoration: none; border-radius: 5px; }
         a.btn:hover { background: #0056b3; }
     </style>
 </head>
