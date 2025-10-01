@@ -75,7 +75,7 @@ if (!$result) {
 <div class="container">
     <h1>📚 Manage Classes</h1>
 
-    <a class="btn" href="Classes.php">➕ Add New Class</a>
+    <a class="btn" href="add_class.php">➕ Add New Class</a>
 
     <table>
         <thead>
@@ -110,10 +110,7 @@ if (!$result) {
         <?php endif; ?>
         </tbody>
     </table>
-
-    <a href="../index.php">⬅ Back</a>
 </div>
-
 </body>
 </html>
 <?php $conn->close(); ?>

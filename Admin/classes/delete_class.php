@@ -16,5 +16,5 @@ if (isset($_GET['id'])) {
         $_SESSION['error'] = "Error: " . $stmt->error;
     }
 }
-header("Location: manage_classes.php");
+header("Location: Classes.php");
 exit;

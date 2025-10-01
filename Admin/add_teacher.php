@@ -18,7 +18,7 @@ include '../Database/db_connect.php';
         .container {max-width:600px; margin:30px auto; background:#fff; padding:20px; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,0.2);}
         h2 {text-align:center; margin-bottom:20px;}
         input, select {width:100%; padding:10px; margin:8px 0; border:1px solid #ccc; border-radius:5px;}
-        button {padding:10px 20px; background:#007bff; color:#fff; border:none; border-radius:5px; cursor:pointer;}
+        button {padding:10px 20px; background:#00bfff; color:#fff; border:none; border-radius:5px; cursor:pointer;}
         button:hover {background:#0056b3;}
         .msg {text-align:center; margin-bottom:15px;}
         .error {color:red;}
@@ -108,8 +108,6 @@ include '../Database/db_connect.php';
 
             <button type="submit">Add Teacher</button>
         </form>
-
-        <a href="teachers.php">⬅ Back to Manage Teachers</a>
     </div>
 </body>
 </html>

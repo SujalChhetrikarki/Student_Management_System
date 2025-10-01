@@ -1,71 +1,106 @@
 <?php
 session_start();
 if (!isset($_SESSION['admin_id'])) {
-    header("Location: admin_login.php");
+    header("Location: ../admin_login.php");
     exit;
 }
+
 include '../../Database/db_connect.php';
 
+// ✅ Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $class_name = trim($_POST['class_name']);
-    $teacher_id = !empty($_POST['teacher_id']) ? $_POST['teacher_id'] : NULL;
+    $class_name = mysqli_real_escape_string($conn, $_POST['class_name']);
+    $teacher_id = !empty($_POST['teacher_id']) ? intval($_POST['teacher_id']) : NULL;
 
-    $stmt = $conn->prepare("INSERT INTO classes (class_name, class_teacher_id) VALUES (?, ?)");
-    $stmt->bind_param("ss", $class_name, $teacher_id);
+    if (!empty($class_name)) {
+        // Insert class
+        $sql = "INSERT INTO classes (class_name) VALUES ('$class_name')";
+        if ($conn->query($sql)) {
+            $class_id = $conn->insert_id;
 
-    if ($stmt->execute()) {
-        $_SESSION['success'] = "✅ Class added successfully!";
-        header("Location: manage_classes.php");
-        exit;
+            // Assign teacher if selected
+            if ($teacher_id) {
+                $conn->query("INSERT INTO class_teachers (class_id, teacher_id) VALUES ($class_id, $teacher_id)");
+            }
+
+            header("Location: classes.php?success=1");
+            exit;
+        } else {
+            $error = "Error: " . $conn->error;
+        }
     } else {
-        $_SESSION['error'] = "❌ Error: " . $stmt->error;
+        $error = "Class name cannot be empty!";
     }
 }
 
+// ✅ Fetch available teachers
 $teachers = $conn->query("SELECT teacher_id, name FROM teachers ORDER BY name ASC");
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Add Class</title>
-    <link rel="stylesheet" href="classes.css">
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; background: #f4f6f9; display: flex; }
+        .sidebar { width: 220px; background: #111; color: #fff; height: 100vh; position: fixed; left: 0; top: 0; padding-top: 20px; }
+        .sidebar h2 { text-align: center; margin-bottom: 30px; font-size: 20px; color: #00bfff; }
+        .sidebar a { display: block; padding: 12px 20px; margin: 8px 15px; background: #222; color: #fff; text-decoration: none; border-radius: 6px; transition: 0.3s; }
+        .sidebar a:hover { background: #00bfff; color: #111; }
+        .sidebar a.logout { background: #dc3545; }
+        .sidebar a.logout:hover { background: #ff4444; color: #fff; }
+        .container { margin-left: 240px; padding: 20px; flex: 1; }
+        form { background: #fff; padding: 20px; border-radius: 8px; max-width: 500px; }
+        label { display: block; margin-bottom: 6px; font-weight: bold; }
+        input, select { width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; }
+        button { background: #00bfff; color: #fff; border: none; padding: 10px 16px; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #2980b9; }
+        .error { color: red; margin-bottom: 10px; }
+    </style>
 </head>
 <body>
-<div class="container">
-    <h2>➕ Add Class</h2>
 
-    <!-- Show success/error -->
-    <?php if (!empty($_SESSION['error'])): ?>
-        <p style="color:red;"><?= $_SESSION['error']; unset($_SESSION['error']); ?></p>
-    <?php endif; ?>
-    <?php if (!empty($_SESSION['success'])): ?>
-        <p style="color:green;"><?= $_SESSION['success']; unset($_SESSION['success']); ?></p>
+<!-- Sidebar -->
+<div class="sidebar">
+  <h2>Admin Panel</h2>
+  <a href="../index.php">🏠 Home</a>
+  <a href="../Manage_student/Managestudent.php">📚 Manage Students</a>
+  <a href="../Manage_Teachers/Teachersshow.php">👨‍🏫 Manage Teachers</a>
+  <a href="classes.php">🏫 Manage Classes</a>
+  <a href="../subjects.php">📖 Manage Subjects</a>
+  <a href="../add_student.php">➕ Add Student</a>
+  <a href="../add_teacher.php">➕ Add Teacher</a>
+  <a href="../Add_exam/add_exam.php">➕ Add Exam</a>
+  <a href="../admin_approve_results.php">✅ Approve Results</a>
+  <a href="../logout.php" class="logout">🚪 Logout</a>
+</div>
+
+<!-- Main Content -->
+<div class="container">
+    <h1>➕ Add New Class</h1>
+
+    <?php if (!empty($error)): ?>
+        <div class="error"><?= $error; ?></div>
     <?php endif; ?>
 
     <form method="POST">
-        <label>Class Name</label>
-        <select name="class_name" required>
-            <option value="">-- Select Class --</option>
-            <option value="Nursery">Nursery</option>
-            <option value="LKG">LKG</option>
-            <option value="UKG">UKG</option>
-            <?php for ($i = 1; $i <= 12; $i++): ?>
-                <option value="<?= $i ?>"><?= $i ?></option>
-            <?php endfor; ?>
-        </select>
+        <label for="class_name">Class Name</label>
+        <input type="text" id="class_name" name="class_name" required>
 
-        <label>Assign Teacher (optional)</label>
-        <select name="teacher_id">
-            <option value="">-- None --</option>
-            <?php while($t = $teachers->fetch_assoc()): ?>
-                <option value="<?= $t['teacher_id']; ?>"><?= $t['name']; ?></option>
+        <label for="teacher_id">Assign Teacher (optional)</label>
+        <select name="teacher_id" id="teacher_id">
+            <option value="">-- Select Teacher --</option>
+            <?php while ($t = $teachers->fetch_assoc()): ?>
+                <option value="<?= $t['teacher_id']; ?>"><?= htmlspecialchars($t['name']); ?></option>
             <?php endwhile; ?>
         </select>
 
-        <button type="submit">Save</button>
+        <button type="submit">Save Class</button>
     </form>
 
-    <a href="manage_classes.php">⬅ Back</a>
+    <br>
 </div>
+
 </body>
 </html>
+<?php $conn->close(); ?>
