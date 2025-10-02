@@ -7,11 +7,11 @@ if (!isset($_SESSION['admin_id'])) {
 
 include '../Database/db_connect.php';
 
-// Total students and teachers
-$total_students = $conn->query("SELECT COUNT(*) as total FROM students")->fetch_assoc()['total'] ?? 0;
-$total_teachers = $conn->query("SELECT COUNT(*) as total FROM teachers")->fetch_assoc()['total'] ?? 0;
+// ✅ Total students and teachers
+$total_students = $conn->query("SELECT COUNT(*) AS total FROM students")->fetch_assoc()['total'] ?? 0;
+$total_teachers = $conn->query("SELECT COUNT(*) AS total FROM teachers")->fetch_assoc()['total'] ?? 0;
 
-// Fetch exams for pass/fail trend
+// ✅ Pass/Fail trend by exam
 $sql_exams = "SELECT exam_id, exam_date FROM exams ORDER BY exam_date ASC";
 $result_exams = $conn->query($sql_exams);
 
@@ -21,27 +21,32 @@ $fail_counts = [];
 
 while ($exam = $result_exams->fetch_assoc()) {
     $exam_dates[] = $exam['exam_date'];
-    $stmt = $conn->prepare("SELECT 
-                                SUM(CASE WHEN average_marks >= 40 THEN 1 ELSE 0 END) AS pass_count,
-                                SUM(CASE WHEN average_marks < 40 THEN 1 ELSE 0 END) AS fail_count
-                            FROM results WHERE exam_id=?");
+
+    $stmt = $conn->prepare("
+        SELECT 
+            SUM(CASE WHEN average_marks >= 40 THEN 1 ELSE 0 END) AS pass_count,
+            SUM(CASE WHEN average_marks < 40 THEN 1 ELSE 0 END) AS fail_count
+        FROM results 
+        WHERE exam_id=?
+    ");
     $stmt->bind_param("i", $exam['exam_id']);
     $stmt->execute();
     $res = $stmt->get_result()->fetch_assoc();
+
     $pass_counts[] = $res['pass_count'] ?? 0;
     $fail_counts[] = $res['fail_count'] ?? 0;
 }
 
-// Upcoming birthdays for students only (next 30 days)
+// ✅ Upcoming birthdays (next 7 days only + class name)
 $sql_birthdays = "
-    SELECT name, dob 
-    FROM students
-    WHERE DATE_FORMAT(dob, '%m-%d') 
+    SELECT s.name, s.date_of_birth, c.class_name
+    FROM students s
+    JOIN classes c ON s.class_id = c.class_id
+    WHERE DATE_FORMAT(s.date_of_birth, '%m-%d') 
           BETWEEN DATE_FORMAT(CURDATE(), '%m-%d') 
-          AND DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL 30 DAY), '%m-%d')
-    ORDER BY DATE_FORMAT(dob, '%m-%d') ASC
+          AND DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL 7 DAY), '%m-%d')
+    ORDER BY DATE_FORMAT(s.date_of_birth, '%m-%d') ASC
 ";
-
 $birthdays = $conn->query($sql_birthdays);
 ?>
 
@@ -52,6 +57,7 @@ $birthdays = $conn->query($sql_birthdays);
 <title>Admin Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
+/* ===== General Layout ===== */
 body { margin: 0; font-family: Arial, sans-serif; background: #f4f6f9; display: flex; }
 .sidebar { width: 220px; background: #111; color: #fff; height: 100vh; position: fixed; left: 0; top: 0; padding-top: 20px; }
 .sidebar h2 { text-align: center; margin-bottom: 30px; font-size: 20px; color: #00bfff; }
@@ -59,17 +65,35 @@ body { margin: 0; font-family: Arial, sans-serif; background: #f4f6f9; display: 
 .sidebar a:hover { background: #00bfff; color: #111; }
 .sidebar a.logout { background: #dc3545; }
 .sidebar a.logout:hover { background: #ff4444; color: #fff; }
+
 .main { margin-left: 220px; padding: 20px; flex: 1; }
 .header { background: #fff; padding: 15px 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); margin-bottom: 20px; }
 .header h1 { margin: 0; font-size: 22px; color: #333; }
-.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+
+/* ===== Cards ===== */
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px; }
 .card { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 3px 8px rgba(0,0,0,0.1); text-align: center; transition: transform 0.3s; }
 .card:hover { transform: translateY(-5px); }
 .card h3 { margin: 10px 0; font-size: 18px; color: #333; }
-.card p { font-size: 14px; color: #666; }
-.card ul { list-style:none; padding:0; margin:0; text-align:left; max-height:200px; overflow-y:auto; }
-.card li { margin-bottom:5px; }
-.card li.today { color: #ff4444; font-weight: bold; }
+.card p { font-size: 16px; font-weight: bold; color: #111; }
+
+/* ===== Birthday List Styling ===== */
+.birthday-card ul { list-style: none; padding: 0; margin: 15px 0 0; }
+.birthday-list { display: flex; flex-direction: column; gap: 10px; }
+
+.birthday-item { display: flex; justify-content: space-between; align-items: center; background: #f8f9fa; padding: 10px 12px; border-radius: 8px; font-size: 14px; transition: 0.3s ease; }
+.birthday-item:hover { background: #eef5ff; }
+
+.birthday-info { font-weight: 600; color: #333; }
+.bday-class { font-size: 13px; color: #666; }
+
+.birthday-date { text-align: right; font-size: 13px; color: #444; }
+.date { margin-right: 6px; font-weight: 500; }
+
+.today-badge { background: #ff4444; color: #fff; font-size: 12px; padding: 3px 7px; border-radius: 6px; }
+.upcoming-badge { background: #00bfff; color: #fff; font-size: 12px; padding: 3px 7px; border-radius: 6px; }
+
+/* ===== Charts ===== */
 .chart-container { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 3px 8px rgba(0,0,0,0.1); margin-bottom: 20px; }
 </style>
 </head>
@@ -103,67 +127,83 @@ body { margin: 0; font-family: Arial, sans-serif; background: #f4f6f9; display: 
       <h3>Total Teachers</h3>
       <p><?= $total_teachers ?></p>
     </div>
-    <div class="card">
-      <h3>🎂 Upcoming Student Birthdays</h3>
-      <?php if ($birthdays && $birthdays->num_rows > 0): ?>
-          <ul>
-          <?php while ($b = $birthdays->fetch_assoc()): 
-                $dob_this_year = date("Y") . "-" . date("m-d", strtotime($b['dob']));
-                $is_today = date("Y-m-d") === $dob_this_year;
-          ?>
-              <li class="<?= $is_today ? 'today' : '' ?>">
-                  <?= htmlspecialchars($b['name']) ?> – <?= date("M d", strtotime($b['dob'])) ?>
-                  <?= $is_today ? '🎉 Today!' : '' ?>
-              </li>
-          <?php endwhile; ?>
+
+    <div class="card birthday-card">
+      <h3>🎂 Birthdays This Week</h3>
+      <?php if ($birthdays->num_rows > 0): ?>
+          <ul class="birthday-list">
+              <?php while ($b = $birthdays->fetch_assoc()): 
+                  $dob = strtotime($b['date_of_birth']);
+                  $dobThisYear = date("Y") . "-" . date("m-d", $dob);
+
+                  // Handle passed dates
+                  $nextBirthday = (strtotime($dobThisYear) < strtotime(date("Y-m-d"))) 
+                                  ? strtotime("+1 year", strtotime($dobThisYear)) 
+                                  : strtotime($dobThisYear);
+
+                  $daysLeft = (int)(($nextBirthday - time()) / (60 * 60 * 24));
+                  $isToday = ($daysLeft === 0);
+              ?>
+                  <li class="birthday-item <?= $isToday ? 'today' : '' ?>">
+                      <div class="birthday-info">
+                          <?= htmlspecialchars($b['name']) ?> 
+                          <span class="bday-class">(<?= htmlspecialchars($b['class_name']) ?>)</span>
+                      </div>
+                      <div class="birthday-date">
+                          <span class="date"><?= date("M d", $dob) ?></span>
+                          <span class="<?= $isToday ? 'today-badge' : 'upcoming-badge' ?>">
+                              <?= $isToday ? '🎉 Today!' : "in $daysLeft days" ?>
+                          </span>
+                      </div>
+                  </li>
+              <?php endwhile; ?>
           </ul>
       <?php else: ?>
-          <p>No student birthdays in the next 30 days 🎉</p>
+          <p>No birthdays this week 🎉</p>
       <?php endif; ?>
     </div>
   </div>
 
   <div class="chart-container">
-    <h3>Students Pass vs Fail Trend</h3>
+    <h3>📊 Students Pass vs Fail Trend</h3>
     <canvas id="passFailLineChart" height="150"></canvas>
   </div>
-
-  <script>
-  const ctx = document.getElementById('passFailLineChart').getContext('2d');
-  const passFailLineChart = new Chart(ctx, {
-      type: 'line',
-      data: {
-          labels: <?= json_encode($exam_dates) ?>,
-          datasets: [
-              {
-                  label: 'Pass',
-                  data: <?= json_encode($pass_counts) ?>,
-                  borderColor: '#4CAF50',
-                  fill: false,
-                  tension: 0.2
-              },
-              {
-                  label: 'Fail',
-                  data: <?= json_encode($fail_counts) ?>,
-                  borderColor: '#FF4444',
-                  fill: false,
-                  tension: 0.2
-              }
-          ]
-      },
-      options: {
-          responsive: true,
-          plugins: {
-              legend: { position: 'bottom' },
-              title: { display: true, text: 'Pass/Fail Trend by Exam' }
-          },
-          scales: {
-              y: { beginAtZero: true, stepSize: 1 }
-          }
-      }
-  });
-  </script>
 </div>
 
+<script>
+const ctx = document.getElementById('passFailLineChart').getContext('2d');
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: <?= json_encode($exam_dates) ?>,
+        datasets: [
+            {
+                label: 'Pass',
+                data: <?= json_encode($pass_counts) ?>,
+                borderColor: '#4CAF50',
+                backgroundColor: '#4CAF50',
+                fill: false,
+                tension: 0.2
+            },
+            {
+                label: 'Fail',
+                data: <?= json_encode($fail_counts) ?>,
+                borderColor: '#FF4444',
+                backgroundColor: '#FF4444',
+                fill: false,
+                tension: 0.2
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { position: 'bottom' },
+            title: { display: true, text: 'Pass/Fail Trend by Exam' }
+        },
+        scales: { y: { beginAtZero: true } }
+    }
+});
+</script>
 </body>
 </html>
