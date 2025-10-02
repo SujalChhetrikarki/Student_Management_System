@@ -25,24 +25,98 @@ $stmtStudents->bind_param("i", $class_id);
 $stmtStudents->execute();
 $students = $stmtStudents->get_result();
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Students in Class</title>
+    <title>Students in <?= htmlspecialchars($class_name); ?></title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            background: #007bff;
+            color: white;
+            padding: 20px;
+            text-align: left;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            background: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #34495e;
+            margin-bottom: 15px;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        ul li {
+            background: #ecf0f1;
+            padding: 12px 15px;
+            margin: 8px 0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: 0.3s;
+        }
+        ul li:hover {
+            background: #dcdde1;
+        }
+        .btn {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 16px;
+            background: #3498db;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+        .btn:hover {
+            background: #2980b9;
+        }
+        .empty {
+            color: #7f8c8d;
+            font-style: italic;
+            padding: 20px;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-    <h2>👨‍🎓 Students in <?= htmlspecialchars($class_name); ?> (ID: <?= htmlspecialchars($class_id); ?>)</h2>
 
-    <?php if ($students->num_rows > 0): ?>
-        <ul>
-            <?php while ($row = $students->fetch_assoc()): ?>
-                <li><?= htmlspecialchars($row['name']); ?> (ID: <?= $row['student_id']; ?>)</li>
-            <?php endwhile; ?>
-        </ul>
-    <?php else: ?>
-        <p>No students in this class.</p>
-    <?php endif; ?>
+    <div class="header">
+        <h1>👨‍🏫 Students</h1>
+    </div>
+
+    <div class="container">
+        <h2>👨‍🎓 Students in <?= htmlspecialchars($class_name); ?> (ID: <?= htmlspecialchars($class_id); ?>)</h2>
+
+        <?php if ($students->num_rows > 0): ?>
+            <ul>
+                <?php while ($row = $students->fetch_assoc()): ?>
+                    <li>✅ <?= htmlspecialchars($row['name']); ?> <small>(ID: <?= $row['student_id']; ?>)</small></li>
+                <?php endwhile; ?>
+            </ul>
+        <?php else: ?>
+            <p class="empty">No students in this class.</p>
+        <?php endif; ?>
+
+        <a href="teacher_dashboard.php" class="btn">⬅ Back to teacher dashboard</a>
+    </div>
+
 </body>
 </html>

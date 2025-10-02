@@ -116,6 +116,7 @@ th { background: #007bff; color: #fff; }
 </table>
 <br>
 <button type="submit" class="btn">Update Attendance</button>
+<a href="teacher_dashboard.php" class="btn">⬅ Back to teacher dashboard</a>
 </form>
 
 </body>
