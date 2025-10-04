@@ -10,44 +10,102 @@ include '../Database/db_connect.php';
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Add Teacher</title>
-    <style>
-        body {font-family: Arial, sans-serif; background:#f1f1f1; margin:0; padding:0;}
-        #header {background:#6dd5ed; color:#fff; padding:15px; text-align:center;}
-        .container {max-width:600px; margin:30px auto; background:#fff; padding:20px; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,0.2);}
-        h2 {text-align:center; margin-bottom:20px;}
-        input, select {width:100%; padding:10px; margin:8px 0; border:1px solid #ccc; border-radius:5px;}
-        button {padding:10px 20px; background:#00bfff; color:#fff; border:none; border-radius:5px; cursor:pointer;}
-        button:hover {background:#0056b3;}
-        .msg {text-align:center; margin-bottom:15px;}
-        .error {color:red;}
-        .success {color:green;}
-        a {display:inline-block; margin-top:10px; text-decoration:none; color:#007bff;}
-        label {display:block; margin-top:8px;}
-        .sidebar {
-            width: 220px;
-            background: #111;
-            color: #fff;
-            height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            padding-top: 20px;
-        }
-        .sidebar h2 {text-align: center; margin-bottom: 30px; font-size: 20px; color: #00bfff;}
-        .sidebar a {display: block; padding: 12px 20px; margin: 8px 15px; background: #222; color: #fff; text-decoration: none; border-radius: 6px; transition: 0.3s;}
-        .sidebar a:hover {background: #00bfff; color: #111;}
-        .sidebar a.logout {background: #dc3545;}
-        .sidebar a.logout:hover {background: #ff4444; color: #fff;}
-    </style>
+<meta charset="UTF-8">
+<title>Add Teacher</title>
+<style>
+/* Global */
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+body { background: #f4f6f9; display: flex; min-height: 100vh; }
+
+/* Sidebar */
+.sidebar {
+    width: 220px;
+    background: #111;
+    color: #fff;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding-top: 20px;
+}
+.sidebar h2 { text-align:center; color:#00bfff; margin-bottom:30px; font-size:20px; }
+.sidebar a {
+    display:block; padding:10px 20px; margin:6px 15px;
+    background:#222; color:#fff; text-decoration:none; border-radius:6px;
+    transition:0.3s;
+}
+.sidebar a:hover { background:#00bfff; color:#111; }
+.sidebar a.logout { background:#dc3545; }
+.sidebar a.logout:hover { background:#ff4444; color:#fff; }
+
+/* Header */
+#header {
+    position: fixed;
+    top: 0;
+    left: 220px;
+    right: 0;
+    height: 45px;  /* thinner header */
+    background: #00bfff;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;  /* smaller font */
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    z-index: 100;
+}
+
+/* Container */
+.container {
+    max-width: 650px;
+    width: 100%;
+    background: #fff;
+    padding: 25px 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    margin: 60px auto 40px auto; /* top, horizontal center, bottom */
+}
+
+
+.container h2 { text-align:center; margin-bottom:25px; color:#333; }
+
+/* Form Styling */
+form label { display:block; margin-top:12px; font-weight:bold; color:#555; }
+form input, form select { width:100%; padding:10px; margin-top:5px; border-radius:6px; border:1px solid #ccc; font-size:14px; }
+form input[type="checkbox"] { width:auto; margin-right:5px; }
+form select[multiple] { height:auto; }
+form button {
+    width:100%;
+    padding:12px;
+    margin-top:20px;
+    background:#00bfff;
+    color:#fff;
+    font-size:16px;
+    font-weight:bold;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    transition:0.3s;
+}
+form button:hover { background:#007bb5; }
+
+/* Messages */
+.msg { text-align:center; margin-bottom:15px; font-weight:bold; }
+.error { color:#dc3545; }
+.success { color:#28a745; }
+
+/* Notes */
+.note { font-size:12px; color:#555; margin-top:5px; }
+
+/* Subjects grid */
+.subjects-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top:5px; }
+.subjects-grid label { font-weight: normal; }
+</style>
 </head>
 <body>
-    <div id="header">
-        <h1>Admin Panel - Add Teacher</h1>
-    </div>
 
-  <div class="sidebar">
+<div class="sidebar">
     <h2>Admin Panel</h2>
     <a href="./index.php">🏠 Home</a>
     <a href="./Manage_student/Managestudent.php">📚 Manage Students</a>
@@ -59,55 +117,52 @@ include '../Database/db_connect.php';
     <a href="./Add_exam/add_exam.php">➕ Add Exam</a>
     <a href="./admin_approve_results.php">✅ Approve Results</a>
     <a href="./logout.php" class="logout">🚪 Logout</a>
-  </div>
+</div>
 
-    <div class="container">
-        <h2>Register New Teacher</h2>
+<div id="header">Add New Teacher</div>
 
-        <!-- Success/Error Messages -->
-        <?php if (isset($_SESSION['error'])): ?>
-            <p class="msg error"><?php echo $_SESSION['error']; unset($_SESSION['error']); ?></p>
-        <?php endif; ?>
-        <?php if (isset($_SESSION['success'])): ?>
-            <p class="msg success"><?php echo $_SESSION['success']; unset($_SESSION['success']); ?></p>
-        <?php endif; ?>
+<div class="container">
+    <h2>Register Teacher</h2>
 
-        <form action="add_teacher_process.php" method="POST">
-            <input type="text" name="teacher_id" placeholder="Teacher ID" required>
-            <input type="text" name="name" placeholder="Full Name" required>
-            <input type="email" name="email" placeholder="Email" required>
-            <input type="password" name="password" placeholder="Password" required>
-            <input type="text" name="specialization" placeholder="Specialization (e.g. Math, Science)" required>
+    <?php if(isset($_SESSION['error'])): ?>
+        <p class="msg error"><?= $_SESSION['error']; unset($_SESSION['error']); ?></p>
+    <?php endif; ?>
+    <?php if(isset($_SESSION['success'])): ?>
+        <p class="msg success"><?= $_SESSION['success']; unset($_SESSION['success']); ?></p>
+    <?php endif; ?>
 
-            <!-- Make Class Teacher -->
-            <label>
-                <input type="checkbox" name="is_class_teacher" value="1"> Make this teacher a Class Teacher
-            </label>
+    <form action="add_teacher_process.php" method="POST">
+        <input type="text" name="teacher_id" placeholder="Teacher ID" required>
+        <input type="text" name="name" placeholder="Full Name" required>
+        <input type="email" name="email" placeholder="Email" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <input type="text" name="specialization" placeholder="Specialization (e.g. Math, Science)" required>
 
-            <!-- Assign Class -->
-           <label for="class_id">Assign Classes (if Class Teacher):</label>
-<select name="class_id[]" multiple size="5">
-    <?php
-    $classQuery = $conn->query("SELECT class_id, class_name FROM classes");
-    while ($row = $classQuery->fetch_assoc()) {
-        echo "<option value='{$row['class_id']}'>{$row['class_name']}</option>";
-    }
-    ?>
-</select>
-<p style="font-size:12px;">Hold Ctrl (Cmd on Mac) to select multiple classes</p>
+        <label><input type="checkbox" name="is_class_teacher" value="1"> Make this teacher a Class Teacher</label>
 
-
-            <!-- Assign Subjects -->
-            <label>Assign Subjects:</label>
+        <label for="class_id">Assign Classes (if Class Teacher):</label>
+        <select name="class_id[]" multiple>
             <?php
-            $subjectQuery = $conn->query("SELECT subject_id, subject_name FROM subjects");
-            while ($row = $subjectQuery->fetch_assoc()) {
-                echo "<label><input type='checkbox' name='subjects[]' value='{$row['subject_id']}'> {$row['subject_name']}</label>";
+            $classQuery = $conn->query("SELECT class_id, class_name FROM classes");
+            while ($row = $classQuery->fetch_assoc()) {
+                echo "<option value='{$row['class_id']}'>{$row['class_name']}</option>";
             }
             ?>
+        </select>
+        <p class="note">Hold Ctrl (Cmd on Mac) to select multiple classes</p>
 
-            <button type="submit">Add Teacher</button>
-        </form>
-    </div>
+        <label>Assign Subjects:</label>
+        <div class="subjects-grid">
+        <?php
+        $subjectQuery = $conn->query("SELECT subject_id, subject_name FROM subjects");
+        while ($row = $subjectQuery->fetch_assoc()) {
+            echo "<label><input type='checkbox' name='subjects[]' value='{$row['subject_id']}'> {$row['subject_name']}</label>";
+        }
+        ?>
+        </div>
+
+        <button type="submit">➕ Add Teacher</button>
+    </form>
+</div>
 </body>
 </html>

@@ -147,9 +147,18 @@ if (!$result) {
                     <td><?= htmlspecialchars($classes_str) ?></td>
                     <td><?= htmlspecialchars($subjects_str) ?></td>
                     <td>
-                        <a href="edit_teacher.php?teacher_id=<?= urlencode($tid) ?>" class="btn">Edit</a>
-                        <a href="delete_teacher.php?teacher_id=<?= urlencode($tid) ?>" class="btn" onclick="return confirm('Are you sure?')">Delete</a>
-                    </td>
+    <a href="edit_teacher.php?teacher_id=<?= urlencode($tid) ?>" 
+       style="background:#ffc107; color:#111; padding:6px 12px; border-radius:5px; text-decoration:none; margin-right:5px;">
+       ✏ Edit
+    </a>
+
+    <a href="delete_teacher.php?teacher_id=<?= urlencode($tid) ?>" 
+       style="background:#dc3545; color:#fff; padding:6px 12px; border-radius:5px; text-decoration:none;" 
+       onclick="return confirm('Are you sure?')">
+       🗑 Delete
+    </a>
+</td>
+
                 </tr>
 
             <?php endwhile; ?>

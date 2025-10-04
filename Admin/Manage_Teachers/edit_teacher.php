@@ -58,17 +58,102 @@ $all_subjects = $conn->query("SELECT subject_id, subject_name FROM subjects");
     <meta charset="UTF-8">
     <title>Edit Teacher</title>
     <style>
-        body { font-family: Arial; background: #f1f1f1; margin:0; padding:0; }
-        .container { max-width:700px; margin:30px auto; background:#fff; padding:20px; border-radius:8px; }
-        input, select { width:100%; padding:10px; margin:8px 0; border:1px solid #ccc; border-radius:5px; }
-        button { padding:10px 20px; background:#007bff; color:#fff; border:none; border-radius:5px; cursor:pointer; }
-        button:hover { background:#0056b3; }
-        label { font-weight: bold; margin-top: 10px; display: block; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+        .container {
+            background: #fff;
+            padding: 30px 40px;
+            margin: 40px auto;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            width: 600px;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 15px;
+            color: #444;
+        }
+        input[type="text"], input[type="email"], input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin-top: 8px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            outline: none;
+            transition: border 0.3s;
+        }
+        input:focus {
+            border: 1px solid #667eea;
+            box-shadow: 0 0 8px rgba(102,126,234,0.3);
+        }
+        .checkbox-group {
+            background: #f9f9f9;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            max-height: 180px;
+            overflow-y: auto;
+        }
+        .checkbox-group label {
+            font-weight: normal;
+            margin: 6px 0;
+            display: block;
+        }
+        button {
+            margin-top: 20px;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background: linear-gradient(135deg, #764ba2, #667eea);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        a {
+            display: inline-block;
+            margin-top: 15px;
+            text-decoration: none;
+            color: #667eea;
+            font-weight: bold;
+            transition: 0.3s;
+            text-align: center;
+            width: 100%;
+        }
+        a:hover {
+            color: #0056b3;
+        }
+        @keyframes fadeIn {
+            from {opacity: 0; transform: translateY(-10px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
     </style>
 </head>
 <body>
 <div class="container">
-    <h2>Edit Teacher - <?php echo htmlspecialchars($teacher['name']); ?></h2>
+    <h2>✏ Edit Teacher - <?php echo htmlspecialchars($teacher['name']); ?></h2>
 
     <form action="edit_teacher_process.php" method="POST">
         <input type="hidden" name="teacher_id" value="<?php echo $teacher_id; ?>">
@@ -90,26 +175,30 @@ $all_subjects = $conn->query("SELECT subject_id, subject_name FROM subjects");
         </label>
 
         <label>Assign Classes:</label>
-        <?php while ($row = $all_classes->fetch_assoc()): ?>
-            <label>
-                <input type="checkbox" name="classes[]" value="<?php echo $row['class_id']; ?>" 
-                <?php if(in_array($row['class_id'], $assigned_classes)) echo 'checked'; ?>>
-                <?php echo htmlspecialchars($row['class_name']); ?>
-            </label>
-        <?php endwhile; ?>
+        <div class="checkbox-group">
+            <?php while ($row = $all_classes->fetch_assoc()): ?>
+                <label>
+                    <input type="checkbox" name="classes[]" value="<?php echo $row['class_id']; ?>" 
+                    <?php if(in_array($row['class_id'], $assigned_classes)) echo 'checked'; ?>>
+                    <?php echo htmlspecialchars($row['class_name']); ?>
+                </label>
+            <?php endwhile; ?>
+        </div>
 
         <label>Assign Subjects:</label>
-        <?php while ($row = $all_subjects->fetch_assoc()): ?>
-            <label>
-                <input type="checkbox" name="subjects[]" value="<?php echo $row['subject_id']; ?>" 
-                <?php if(in_array($row['subject_id'], $assigned_subjects)) echo 'checked'; ?>>
-                <?php echo htmlspecialchars($row['subject_name']); ?>
-            </label>
-        <?php endwhile; ?>
+        <div class="checkbox-group">
+            <?php while ($row = $all_subjects->fetch_assoc()): ?>
+                <label>
+                    <input type="checkbox" name="subjects[]" value="<?php echo $row['subject_id']; ?>" 
+                    <?php if(in_array($row['subject_id'], $assigned_subjects)) echo 'checked'; ?>>
+                    <?php echo htmlspecialchars($row['subject_name']); ?>
+                </label>
+            <?php endwhile; ?>
+        </div>
 
-        <button type="submit">Update Teacher</button>
+        <button type="submit">💾 Update Teacher</button>
     </form>
-    <a href="teachers.php">⬅ Back to Manage Teachers</a>
+    <a href="Teachersshow.php">⬅ Back to Manage Teachers</a>
 </div>
 </body>
 </html>

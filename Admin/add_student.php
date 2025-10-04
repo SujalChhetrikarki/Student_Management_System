@@ -24,8 +24,32 @@ if ($result && $result->num_rows > 0) {
     <title>Add Student</title>
     <style>
         body {font-family: Arial, sans-serif; background:#f1f1f1; margin:0; padding:0;}
-        #header {background:#6dd5ed; color:#fff; padding:15px; text-align:center;}
-        .container {max-width:600px; margin:30px auto; background:#fff; padding:20px; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,0.2);}
+#header {
+    position: fixed;
+    top: 0;
+    left: 220px;   /* if using sidebar */
+    right: 0;
+    height: 50px;
+    background: #00bfff;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    z-index: 100;
+}
+
+        .container {
+    max-width: 650px;
+    width: 100%;
+    background: #fff;
+    padding: 25px 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    margin: 60px auto 40px auto; /* top, horizontal center, bottom */
+}
         h2 {text-align:center; margin-bottom:20px;}
         input, select {width:100%; padding:10px; margin:8px 0; border:1px solid #ccc; border-radius:5px;}
         button {padding:10px 20px; background:#00bfff; color:#fff; border:none; border-radius:5px; cursor:pointer;}
@@ -93,7 +117,7 @@ if ($result && $result->num_rows > 0) {
   </div>
 
     <div id="header">
-        <h1>Admin Panel - Add Student</h1>
+        Admin Panel - Add Student
     </div>
 
     <div class="container">

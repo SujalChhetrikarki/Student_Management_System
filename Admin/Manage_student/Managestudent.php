@@ -29,22 +29,13 @@ $students = $conn->query($sql);
 if (!$students) {
     die("❌ SQL Error: " . $conn->error);
 }
-
-// ✅ Fetch all classes for upgrade dropdown
-$classResult = $conn->query("SELECT class_id, class_name FROM classes ORDER BY class_name ASC");
-$classes = [];
-if ($classResult->num_rows > 0) {
-    while ($c = $classResult->fetch_assoc()) {
-        $classes[] = $c;
-    }
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Manage Students</title>
- <link rel="stylesheet" href="managestudent.css">
+    <link rel="stylesheet" href="managestudent.css">
     <style>
         body { margin: 0; font-family: Arial, sans-serif; background: #f4f6f9; display: flex; }
         .sidebar { width: 220px; background: #111; color: #fff; height: 100vh; position: fixed; left: 0; top: 0; padding-top: 20px; }
@@ -66,10 +57,8 @@ if ($classResult->num_rows > 0) {
         .btn { padding: 6px 10px; border-radius: 6px; text-decoration: none; }
         .btn.edit { background: #ffc107; color: #111; }
         .btn.delete { background: #dc3545; color: #fff; }
-        .btn.upgrade { background: #28a745; color: #fff; }
         .btn.edit:hover { background: #e0a800; }
         .btn.delete:hover { background: #c82333; }
-        .btn.upgrade:hover { background: #218838; }
     </style>
 </head>
 <body>
@@ -112,7 +101,6 @@ if ($classResult->num_rows > 0) {
                     <th>Class</th>
                     <th>Performance (Avg Marks)</th>
                     <th>Actions</th>
-                    <th>Upgrade Class</th>
                 </tr>
             </thead>
             <tbody>
@@ -135,26 +123,12 @@ if ($classResult->num_rows > 0) {
                             <td>
                                 <a href="edit_student.php?student_id=<?= $row['student_id']; ?>" class="btn edit">✏ Edit</a>
                                 <a href="delete_student.php?student_id=<?= $row['student_id']; ?>" class="btn delete"
-                                   onclick="return confirm('Are you sure you want to delete this student?');">🗑 Delete</a>
-                            </td>
-                            <td>
-                                <form action="upgrade_student.php" method="post" style="display:flex; gap:5px; justify-content:center;">
-                                    <input type="hidden" name="student_id" value="<?= $row['student_id']; ?>">
-                                    <select name="new_class_id" required>
-                                        <option value="">-- Select Class --</option>
-                                        <?php foreach($classes as $class): ?>
-                                            <option value="<?= $class['class_id']; ?>" <?= $class['class_id']==$row['class_id']?'disabled':''; ?>>
-                                                <?= htmlspecialchars($class['class_name']); ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                    <button type="submit" class="btn upgrade">⬆ Upgrade</button>
-                                </form>
+                                   onclick="return confirm('Are you sure you want to delete <?= htmlspecialchars($row['name']); ?>?');">🗑 Delete</a>
                             </td>
                         </tr>
                     <?php endwhile; ?>
                 <?php else: ?>
-                    <tr><td colspan="7">No matching students found.</td></tr>
+                    <tr><td colspan="6">No matching students found.</td></tr>
                 <?php endif; ?>
             </tbody>
         </table>
