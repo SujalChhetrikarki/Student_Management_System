@@ -20,7 +20,19 @@ $teacher = $result->fetch_assoc();
 $stmt->close();
 
 // =======================
-// 2. Fetch Classes Assigned
+// 2. Fetch Notices (For Teachers or Both)
+// =======================
+$notice_sql = "
+    SELECT title, message, created_at 
+    FROM notices 
+    WHERE target IN ('teachers', 'both')
+    ORDER BY created_at DESC 
+    LIMIT 5
+";
+$notices = $conn->query($notice_sql);
+
+// =======================
+// 3. Fetch Classes Assigned
 // =======================
 $stmt_classes = $conn->prepare("
     SELECT c.class_id, c.class_name, c.class_teacher_id
@@ -35,7 +47,7 @@ $classes = $stmt_classes->get_result();
 $stmt_classes->close();
 
 // =======================
-// 3. Fetch Subjects Assigned per Class
+// 4. Fetch Subjects Assigned per Class
 // =======================
 $stmt_subjects = $conn->prepare("
     SELECT s.subject_id, s.subject_name, c.class_id, c.class_name
@@ -69,7 +81,9 @@ li { padding: 10px; border-bottom: 1px solid #ccc; display: flex; justify-conten
 .btn:hover { background: #0056b3; }
 .profile-card { margin-bottom: 20px; padding: 15px; background: #e9ecef; border-radius: 5px; }
 .data-section { margin-bottom: 20px; }
-.data-section div { display: flex; gap: 5px; }
+.notice-card { background: #fff3cd; border: 1px solid #ffeeba; border-radius: 8px; padding: 15px; margin-bottom: 20px; }
+.notice-card h3 { margin: 0 0 5px; color: #856404; }
+.notice-card small { color: #6c757d; font-size: 12px; }
 </style>
 </head>
 <body>
@@ -83,9 +97,29 @@ li { padding: 10px; border-bottom: 1px solid #ccc; display: flex; justify-conten
 
 <!-- Teacher Profile -->
 <section class="profile-card">
-    <h2>Welcome, <?php echo htmlspecialchars($teacher['name']); ?> 🎉</h2>
-    <p><strong>Email:</strong> <?php echo htmlspecialchars($teacher['email']); ?></p>
-    <p><strong>Specialization:</strong> <?php echo htmlspecialchars($teacher['specialization']); ?></p>
+    <h2>Welcome, <?= htmlspecialchars($teacher['name']); ?> 🎉</h2>
+    <p><strong>Email:</strong> <?= htmlspecialchars($teacher['email']); ?></p>
+    <p><strong>Specialization:</strong> <?= htmlspecialchars($teacher['specialization']); ?></p>
+</section>
+
+<!-- Notices Section -->
+<section class="data-section">
+    <h2>📢 Latest Notices</h2>
+    <?php
+    if (!$notices) {
+        echo "<p style='color:red;'>Error fetching notices: " . $conn->error . "</p>";
+    } elseif ($notices->num_rows > 0) {
+        while ($notice = $notices->fetch_assoc()) {
+            echo "<div class='notice-card'>";
+            echo "<h3>" . htmlspecialchars($notice['title']) . "</h3>";
+            echo "<p>" . nl2br(htmlspecialchars($notice['message'])) . "</p>";
+            echo "<small>🕒 Posted on " . date('d M Y, h:i A', strtotime($notice['created_at'])) . "</small>";
+            echo "</div>";
+        }
+    } else {
+        echo "<p>No new notices.</p>";
+    }
+    ?>
 </section>
 
 <!-- Classes Assigned -->
@@ -95,9 +129,9 @@ li { padding: 10px; border-bottom: 1px solid #ccc; display: flex; justify-conten
         <ul>
             <?php while ($row = $classes->fetch_assoc()): ?>
                 <li>
-                    <span><?php echo htmlspecialchars($row['class_name']); ?> (ID: <?php echo $row['class_id']; ?>)</span>
+                    <span><?= htmlspecialchars($row['class_name']); ?> (ID: <?= $row['class_id']; ?>)</span>
                     <div>
-                        <a class="btn" href="view_students.php?class_id=<?php echo $row['class_id']; ?>">👨‍🎓 View Students</a>
+                        <a class="btn" href="view_students.php?class_id=<?= $row['class_id']; ?>">👨‍🎓 View Students</a>
                         <?php if ($row['class_teacher_id'] === $teacher_id): ?>
                             <span style="color: green;">Class Teacher ✅</span>
                         <?php endif; ?>
@@ -117,24 +151,21 @@ li { padding: 10px; border-bottom: 1px solid #ccc; display: flex; justify-conten
         <ul>
             <?php while ($row = $subjects->fetch_assoc()): ?>
                 <li>
-                    <span><?php echo htmlspecialchars($row['subject_name']); ?> (Class: <?php echo htmlspecialchars($row['class_name']); ?>)</span>
+                    <span><?= htmlspecialchars($row['subject_name']); ?> (Class: <?= htmlspecialchars($row['class_name']); ?>)</span>
                     <div>
-                        <a class="btn" href="Showresults.php?subject_id=<?php echo $row['subject_id']; ?>">📊 Manage Results</a>
+                        <a class="btn" href="Showresults.php?subject_id=<?= $row['subject_id']; ?>">📊 Manage Results</a>
                         <?php
-                        // Show Add Attendance only if teacher is class teacher (from teachers table)
-                        if ($teacher['is_class_teacher'] == 1):
-                            // Optionally, you can also ensure this teacher is assigned to this class
-                            $stmt_ct = $conn->prepare("SELECT 1 FROM class_teachers WHERE class_id = ? AND teacher_id = ?");
-                            $stmt_ct->bind_param("is", $row['class_id'], $teacher_id);
-                            $stmt_ct->execute();
-                            $ct_result = $stmt_ct->get_result();
-                            if ($ct_result->num_rows > 0):
+                        // Allow attendance button if teacher is a class teacher
+                        $stmt_ct = $conn->prepare("SELECT 1 FROM class_teachers WHERE class_id = ? AND teacher_id = ?");
+                        $stmt_ct->bind_param("is", $row['class_id'], $teacher_id);
+                        $stmt_ct->execute();
+                        $ct_result = $stmt_ct->get_result();
+                        if ($ct_result->num_rows > 0):
                         ?>
-                            <a class="btn" href="manage_attendance.php?subject_id=<?php echo $row['subject_id']; ?>&class_id=<?php echo $row['class_id']; ?>">📝 Add Attendance</a>
+                            <a class="btn" href="manage_attendance.php?subject_id=<?= $row['subject_id']; ?>&class_id=<?= $row['class_id']; ?>">📝 Add Attendance</a>
                         <?php
-                            endif;
-                            $stmt_ct->close();
                         endif;
+                        $stmt_ct->close();
                         ?>
                     </div>
                 </li>
@@ -144,6 +175,7 @@ li { padding: 10px; border-bottom: 1px solid #ccc; display: flex; justify-conten
         <p>No subjects assigned yet.</p>
     <?php endif; ?>
 </section>
+
 </div>
 </body>
 </html>

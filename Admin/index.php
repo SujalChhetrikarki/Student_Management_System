@@ -127,6 +127,15 @@ body { margin: 0; font-family: Arial, sans-serif; background: #f4f6f9; display: 
       <h3>Total Teachers</h3>
       <p><?= $total_teachers ?></p>
     </div>
+    <div class="card">
+  <h3>📢 Manage Notices</h3>
+  <p><a href="manage_notices.php" style="
+      background:#00bfff; color:white; text-decoration:none; 
+      padding:8px 14px; border-radius:6px; display:inline-block;">
+      ➕ Add / Manage Notices
+  </a></p>
+</div>
+
 
     <div class="card birthday-card">
       <h3>🎂 Birthdays This Week</h3>
@@ -163,6 +172,7 @@ body { margin: 0; font-family: Arial, sans-serif; background: #f4f6f9; display: 
       <?php endif; ?>
     </div>
   </div>
+  
 
   <div class="chart-container">
     <h3>📊 Students Pass vs Fail Trend</h3>
