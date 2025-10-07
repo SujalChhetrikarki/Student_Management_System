@@ -83,14 +83,14 @@ body {
     max-width: 900px;
     margin: auto;
     background: #fff;
-    border: 3px solid #2c3e50;
+    border: 3px solid #00bfff;
     padding: 40px;
     border-radius: 12px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.25);
 }
 .school-header {
     text-align: center;
-    border-bottom: 3px solid #2c3e50;
+    border-bottom: 3px solid #00bfff;
     padding-bottom: 15px;
     margin-bottom: 25px;
 }
@@ -98,7 +98,7 @@ body {
     margin: 0;
     font-size: 36px;
     font-weight: bold;
-    color: #2c3e50;
+    color: #00bfff;
     text-transform: uppercase;
     letter-spacing: 2px;
 }
@@ -113,7 +113,7 @@ body {
     line-height: 1.6;
 }
 .student-info strong {
-    color: #2c3e50;
+    color: #00bfff;
 }
 h2 {
     text-align: center; 
@@ -132,7 +132,7 @@ th, td {
     font-size: 14px;
 }
 th {
-    background: #2c3e50;
+    background: #00bfff;
     color: #fff;
     font-size: 15px;
 }
@@ -159,7 +159,7 @@ tfoot td {
     margin: 20px auto;
 }
 .print-btn button {
-    background: #2c3e50;
+    background: #00bfff;
     color: #fff;
     border: none;
     padding: 12px 25px;
@@ -181,15 +181,49 @@ tfoot td {
     }
     .report-card {
         box-shadow: none;
-        border: 2px solid #000;
+        border: 2px solid #00bfff;
         margin: 0;
         width: 100%;
     }
 }
+.sidebar {
+            width: 220px;
+            background: #00bfff;
+            height: 100vh;
+            position: fixed;
+            top: 0; left: 0;
+            padding: 20px 15px;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+        .sidebar h2 {
+            color: #fff;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .sidebar a {
+            display: block;
+            color: #fff;
+            padding: 12px;
+            margin: 8px 0;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: background 0.3s;
+        }
+        .sidebar a:hover {
+            background: rgba(255,255,255,0.2);
+        }
 </style>
 </head>
 <body>
-
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>📚 Dashboard</h2>
+        <a href="student_dashboard.php">🏠 Home</a>
+        <a href="attendance.php">📅 Attendance</a>
+        <a href="results.php">📊 Results</a>
+        <a href="profile.php">👤 Profile</a>
+        <a href="logout.php" class="logout">🚪 Logout</a>
+    </div>
 <div class="report-card">
     <div class="school-header">
         <h1>Dignity Academy</h1>

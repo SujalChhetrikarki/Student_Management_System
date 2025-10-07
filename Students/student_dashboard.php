@@ -73,7 +73,7 @@ $conn->close();
         }
         .sidebar {
             width: 220px;
-            background: #007bff;
+            background: #00bfff;
             height: 100vh;
             position: fixed;
             top: 0; left: 0;
@@ -102,7 +102,7 @@ $conn->close();
             padding: 30px;
         }
         .header {
-            background: #007bff;
+            background: #00bfff;
             color: #fff;
             padding: 15px 20px;
             border-radius: 8px;
@@ -168,6 +168,7 @@ $conn->close();
     <!-- Sidebar -->
     <div class="sidebar">
         <h2>📚 Dashboard</h2>
+        <a href="student_dashboard.php">🏠 Home</a>
         <a href="attendance.php">📅 Attendance</a>
         <a href="results.php">📊 Results</a>
         <a href="profile.php">👤 Profile</a>
@@ -207,35 +208,6 @@ $conn->close();
             ?>
         </div>
 
-        <div class="card">
-            <h2>📊 Attendance Summary</h2>
-            <div class="chart-container">
-                <canvas id="attendanceChart"></canvas>
-            </div>
-        </div>
-    </div>
 
-<script>
-    const ctx = document.getElementById('attendanceChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Present', 'Absent'],
-            datasets: [{
-                data: [<?php echo $present; ?>, <?php echo $absent; ?>, <?php echo $late; ?>],
-                backgroundColor: [
-                    'rgba(40, 167, 69, 0.7)', // green
-                    'rgba(220, 53, 69, 0.7)'
-                ],
-                borderColor: [
-                    'rgba(40, 167, 69, 1)',
-                    'rgba(220, 53, 69, 1)'
-                ],
-                borderWidth: 1
-            }]
-        },
-        options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
-    });
-</script>
 </body>
 </html>
