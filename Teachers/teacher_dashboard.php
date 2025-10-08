@@ -229,34 +229,36 @@ header h1 {
         <?php endif; ?>
     </div>
 
-    <!-- Subjects -->
-    <div class="section">
-        <h2>Your Subjects</h2>
-        <?php if ($subjects->num_rows > 0): ?>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Subject</th>
-                    <th>Class</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-            <?php while ($row = $subjects->fetch_assoc()): ?>
-                <tr>
-                    <td><?= htmlspecialchars($row['subject_name']); ?></td>
-                    <td><?= htmlspecialchars($row['class_name']); ?></td>
-                    <td>
-                        <a class="btn" href="Showresults.php?subject_id=<?= $row['subject_id']; ?>">Results</a>
-                    </td>
-                </tr>
-            <?php endwhile; ?>
-            </tbody>
-        </table>
-        <?php else: ?>
-            <p>No subjects assigned yet.</p>
-        <?php endif; ?>
-    </div>
+<div class="section">
+    <h2>Your Subjects</h2>
+    <?php if ($subjects->num_rows > 0): ?>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Subject</th>
+                <th>Class</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        <?php while ($row = $subjects->fetch_assoc()): ?>
+            <tr>
+                <td><?= htmlspecialchars($row['subject_name']); ?></td>
+                <td><?= htmlspecialchars($row['class_name']); ?></td>
+                <td>
+                    <a class="btn" 
+                       href="manage_marks.php?class_id=<?= $row['class_id']; ?>&subject_id=<?= $row['subject_id']; ?>">
+                       Manage Marks
+                    </a>
+                </td>
+            </tr>
+        <?php endwhile; ?>
+        </tbody>
+    </table>
+    <?php else: ?>
+        <p>No subjects assigned yet.</p>
+    <?php endif; ?>
+</div>
 
 </div>
 </body>

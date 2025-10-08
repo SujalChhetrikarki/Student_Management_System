@@ -8,7 +8,7 @@ if (!isset($_SESSION['teacher_id'])) {
 include '../Database/db_connect.php';
 
 $teacher_id = $_SESSION['teacher_id'];
-$class_id = $_GET['class_id'] ?? null;
+$class_id = $_GET['class_id'] ?? date('Y-m-d');
 $date = $_GET['date'] ?? date('Y-m-d');
 
 if (!$class_id) {
@@ -65,55 +65,51 @@ $attendance = $stmt2->get_result();
 <meta charset="UTF-8">
 <title>Manage Attendance</title>
 <style>
-body {
-    font-family: "Segoe UI", Arial;
-    background: #f9fafc;
-    margin: 0;
-    padding: 30px;
-}
-h2 {
-    color: #007bff;
-}
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 15px;
-}
-th, td {
-    border: 1px solid #ccc;
-    padding: 10px;
-    text-align: center;
-}
-th {
-    background: #007bff;
-    color: #fff;
-}
-tr:nth-child(even) {
-    background: #f2f2f2;
-}
-.btn {
-    padding: 8px 14px;
-    background: #007bff;
+/* ===== Header ===== */
+body { font-family: "Segoe UI", Arial; background: #f9fafc; margin: 0; padding: 0; color: #333; }
+header {
+    background: #0066cc;
     color: white;
-    text-decoration: none;
+    padding: 15px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+header h1 { margin: 0; font-size: 24px; }
+header a.logout-btn {
+    background: #dc3545;
+    color: white;
+    padding: 8px 15px;
     border-radius: 6px;
-    font-weight: bold;
-    margin-right: 10px;
-}
-.btn:hover {
-    background: #0056b3;
-}
-.success {
-    color: green;
+    text-decoration: none;
     font-weight: bold;
 }
-.date-form {
-    margin-bottom: 10px;
-}
+header a.logout-btn:hover { background: #b02a37; }
+
+/* ===== Container ===== */
+.container { max-width: 1100px; margin: 30px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+
+h2 { color: #007bff; }
+table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+th { background: #007bff; color: #fff; }
+tr:nth-child(even) { background: #f2f2f2; }
+.btn { padding: 8px 14px; background: #007bff; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; margin-right: 10px; }
+.btn:hover { background: #0056b3; }
+.success { color: green; font-weight: bold; }
+.date-form { margin-bottom: 10px; }
 </style>
 </head>
 <body>
 
+<!-- Header -->
+<header>
+    <h1>👨‍🏫 Teacher Dashboard</h1>
+    <a href="logout.php" class="logout-btn">Logout</a>
+</header>
+
+<!-- Main Container -->
+<div class="container">
 <h2>🗓 Manage Attendance</h2>
 
 <form method="GET" class="date-form">
@@ -142,8 +138,9 @@ tr:nth-child(even) {
 </table>
 <br>
 <button type="submit" class="btn">Save Attendance</button>
-<a href="teacher_dashboard.php" class="btn">⬅ Back</a>
+<a href="teacher_dashboard.php" class="btn">⬅ Back to Dashboard</a>
 </form>
+</div>
 
 </body>
 </html>
