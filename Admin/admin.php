@@ -75,39 +75,58 @@
 </head>
 <body>
 
-    <div id="header"> </div>
-    <main>
-        <div class="admin-box">
-            <h2>Admin Login</h2>
-            <a href="../index.php">
-  <img src="../Images/logo.jpg" alt="Logo" 
-       style="display:block; margin:0 auto 20px auto; width:80px; height:80px; object-fit:cover; border-radius:10px;">
-</a>
+<div id="header"></div>
 
-            <form action="admin_login_process.php" method="post">
-                <label for="admin_id">Admin ID :</label>
-                <input type="text" id="admin_id" name="admin_id" required>
-                
-                <label for="password">Password :</label>
-                <input type="password" id="password" name="password" required>
-                
-                <button type="submit">Login</button>
-            </form>
-            <a href="adminregister.php" class="signup-btn">Sign Up as Admin</a>
-            <p class="note">⚠ Only authorized administrators are allowed.</p>
-        </div>
-    </main>
+<main>
+    <div class="admin-box">
+        <h2>Admin Login</h2>
+        <a href="../index.php">
+            <img src="../Images/logo.jpg" alt="Logo" 
+                 style="display:block; margin:0 auto 20px auto; width:80px; height:80px; object-fit:cover; border-radius:10px;">
+        </a>
 
-    <div id="footer"></div>
+        <form action="admin_login_process.php" method="post">
+            <label for="admin_id">Admin ID :</label>
+            <input type="text" id="admin_id" name="admin_id" required>
+            
+            <label for="password">Password :</label>
+            <input type="password" id="password" name="password" required>
+            
+            <button type="submit">Login</button>
+        </form>
 
-    <script>
-        fetch("adminheader.php")
-          .then(res => res.text())
-          .then(data => document.getElementById("header").innerHTML = data);
+        <a href="#" class="signup-btn" id="secureSignUp">Sign Up as Admin</a>
+        <p class="note">⚠ Only authorized administrators are allowed.</p>
 
-        fetch("adminfooter.php")
-          .then(res => res.text())
-          .then(data => document.getElementById("footer").innerHTML = data);
-    </script>
+        <!-- Hidden form to send secret code -->
+        <form action="verify_admin_code.php" method="POST" id="codeForm" style="display:none;">
+            <input type="hidden" name="code" id="hiddenCode">
+        </form>
+    </div>
+</main>
+
+<div id="footer"></div>
+
+<script>
+    // Load header and footer
+    fetch("adminheader.php")
+      .then(res => res.text())
+      .then(data => document.getElementById("header").innerHTML = data);
+
+    fetch("adminfooter.php")
+      .then(res => res.text())
+      .then(data => document.getElementById("footer").innerHTML = data);
+
+    // Secure Admin Signup Code
+    document.getElementById("secureSignUp").addEventListener("click", function(e) {
+        e.preventDefault();
+        const code = prompt("🔒 Enter Admin Access Code:");
+        if (code) {
+            document.getElementById("hiddenCode").value = code;
+            document.getElementById("codeForm").submit();
+        }
+    });
+</script>
+
 </body>
 </html>

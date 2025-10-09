@@ -38,23 +38,49 @@ $stmt->execute();
 $students = $stmt->get_result();
 $stmt->close();
 
-// 3️⃣ Handle form submission to update results
+// 3️⃣ Handle form submission
+$success = "";
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     foreach ($_POST['marks'] as $student_id => $marks) {
         $marks = trim($marks);
         if ($marks === '') continue;
 
-        // Update or insert into results table
+        // Insert or update marks (prevent duplicates)
         $stmt = $conn->prepare("
-            INSERT INTO results (student_id, exam_id, marks_obtained)
-            VALUES (?, ?, ?)
-            ON DUPLICATE KEY UPDATE marks_obtained = VALUES(marks_obtained)
+            INSERT INTO results (student_id, exam_id, marks_obtained, status)
+            VALUES (?, ?, ?, 'Approved')
+            ON DUPLICATE KEY UPDATE marks_obtained = VALUES(marks_obtained), status='Approved'
         ");
         $stmt->bind_param("iid", $student_id, $exam_id, $marks);
         $stmt->execute();
         $stmt->close();
+
+// ✅ Update progressive average_marks up to the current exam
+$stmt_avg = $conn->prepare("
+    UPDATE results r
+    JOIN (
+        SELECT r2.result_id,
+               ROUND((
+                   SELECT AVG(r3.marks_obtained)
+                   FROM results r3
+                   JOIN exams e3 ON r3.exam_id = e3.exam_id
+                   WHERE r3.student_id = r2.student_id
+                     AND e3.subject_id = e2.subject_id
+                     AND e3.exam_date <= e2.exam_date
+               ),2) AS avg_marks
+        FROM results r2
+        JOIN exams e2 ON r2.exam_id = e2.exam_id
+        WHERE r2.student_id = ?
+    ) t ON r.result_id = t.result_id
+    SET r.average_marks = t.avg_marks
+    WHERE r.student_id = ?
+");
+$stmt_avg->bind_param("ii", $student_id, $student_id);
+$stmt_avg->execute();
+$stmt_avg->close();
+
     }
-    $success = "Marks updated successfully!";
+    $success = "✅ Marks updated successfully! Average marks calculated automatically.";
 }
 
 // 4️⃣ Fetch existing marks
@@ -67,91 +93,75 @@ while ($row = $res->fetch_assoc()) {
     $existing_marks[$row['student_id']] = $row['marks_obtained'];
 }
 $stmt->close();
+
+// 5️⃣ Re-fetch students (optional, for clean loop)
+$stmt = $conn->prepare("SELECT student_id, name FROM students WHERE class_id = ?");
+$stmt->bind_param("i", $exam['class_id']);
+$stmt->execute();
+$students = $stmt->get_result();
+$stmt->close();
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>Add/Update Marks - <?= htmlspecialchars($exam['subject_name']) ?></title>
-    <style>
-        /* ===== Header ===== */
-        body { font-family: "Segoe UI", Arial; background: #f4f6fa; margin: 0; padding: 0; color: #333; }
-        header {
-            background: #0066cc;
-            color: white;
-            padding: 15px 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        header h1 {
-            margin: 0;
-            font-size: 24px;
-        }
-        header a.logout-btn {
-            background: #dc3545;
-            color: white;
-            padding: 8px 15px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        header a.logout-btn:hover { background: #b02a37; }
-
-        /* ===== Container ===== */
-        .container { max-width: 1100px; margin: 30px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
-
-        h2 { color: #0066cc; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
-        th { background: #007bff; color: #fff; }
-        input[type="number"] { width: 60px; padding: 5px; }
-        .btn { background: #28a745; color: #fff; padding: 6px 12px; text-decoration: none; border-radius: 4px; }
-        .btn:hover { background: #218838; }
-        .success { color: green; margin-top: 10px; }
-        .back-btn { display: inline-block; background: #007bff; color: white; padding: 6px 12px; border-radius: 6px; text-decoration: none; margin-bottom: 15px; }
-        .back-btn:hover { background: #0056b3; }
-    </style>
+<meta charset="UTF-8">
+<title>Add/Update Marks - <?= htmlspecialchars($exam['subject_name']) ?></title>
+<style>
+body { font-family: "Segoe UI", Arial; background: #f4f6fa; margin: 0; padding: 0; color: #333; }
+header { background: #0066cc; color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; }
+header h1 { margin: 0; font-size: 24px; }
+header a.logout-btn { background: #dc3545; color: white; padding: 8px 15px; border-radius: 6px; text-decoration: none; font-weight: bold; }
+header a.logout-btn:hover { background: #b02a37; }
+.container { max-width: 1100px; margin: 30px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+h2 { color: #0066cc; }
+table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+th { background: #007bff; color: #fff; }
+input[type="number"] { width: 60px; padding: 5px; }
+.btn { background: #28a745; color: #fff; padding: 6px 12px; text-decoration: none; border-radius: 4px; cursor: pointer; }
+.btn:hover { background: #218838; }
+.success { color: green; margin-top: 10px; font-weight: bold; }
+.back-btn { display: inline-block; background: #007bff; color: white; padding: 6px 12px; border-radius: 6px; text-decoration: none; margin-bottom: 15px; }
+.back-btn:hover { background: #0056b3; }
+</style>
 </head>
 <body>
 
-<!-- Header -->
 <header>
-    <h1>Add / Update Marks</h1>
-    <a href="logout.php" class="logout-btn">Logout</a>
+<h1>Add / Update Marks</h1>
+<a href="logout.php" class="logout-btn">Logout</a>
 </header>
 
-<!-- Main Container -->
 <div class="container">
-    <a class="back-btn" href="manage_marks.php?class_id=<?= $exam['class_id'] ?>&subject_id=<?= $exam['subject_id'] ?>">⬅ Back to Results</a>
+<a class="back-btn" href="manage_marks.php?class_id=<?= $exam['class_id'] ?>&subject_id=<?= $exam['subject_id'] ?>">⬅ Back to Results</a>
 
-    <h2>Add / Update Marks for <?= htmlspecialchars($exam['subject_name']) ?> — <?= htmlspecialchars($exam['class_name']) ?></h2>
-    <p>Exam Date: <?= htmlspecialchars($exam['exam_date']) ?> | Term: <?= htmlspecialchars($exam['term']) ?> | Max Marks: <?= htmlspecialchars($exam['max_marks']) ?></p>
+<h2>Add / Update Marks for <?= htmlspecialchars($exam['subject_name']) ?> — <?= htmlspecialchars($exam['class_name']) ?></h2>
+<p>Exam Date: <?= htmlspecialchars($exam['exam_date']) ?> | Term: <?= htmlspecialchars($exam['term']) ?> | Max Marks: <?= htmlspecialchars($exam['max_marks']) ?></p>
 
-    <?php if (!empty($success)) echo "<p class='success'>$success</p>"; ?>
+<?php if (!empty($success)) echo "<p class='success'>$success</p>"; ?>
 
-    <form method="post">
-    <table>
-        <tr>
-            <th>Student ID</th>
-            <th>Student Name</th>
-            <th>Marks Obtained</th>
-        </tr>
-        <?php while ($student = $students->fetch_assoc()): ?>
-        <tr>
-            <td><?= $student['student_id'] ?></td>
-            <td><?= htmlspecialchars($student['name']) ?></td>
-            <td>
-                <input type="number" step="0.01" min="0" max="<?= $exam['max_marks'] ?>"
-                       name="marks[<?= $student['student_id'] ?>]"
-                       value="<?= $existing_marks[$student['student_id']] ?? '' ?>">
-            </td>
-        </tr>
-        <?php endwhile; ?>
-    </table>
-    <br>
-    <button type="submit" class="btn">Save Marks</button>
-    </form>
+<form method="post">
+<table>
+<tr>
+<th>Student ID</th>
+<th>Student Name</th>
+<th>Marks Obtained</th>
+</tr>
+<?php while ($student = $students->fetch_assoc()): ?>
+<tr>
+<td><?= $student['student_id'] ?></td>
+<td><?= htmlspecialchars($student['name']) ?></td>
+<td>
+<input type="number" step="0.01" min="0" max="<?= $exam['max_marks'] ?>"
+name="marks[<?= $student['student_id'] ?>]"
+value="<?= $existing_marks[$student['student_id']] ?? '' ?>">
+</td>
+</tr>
+<?php endwhile; ?>
+</table>
+<br>
+<button type="submit" class="btn">Save Marks</button>
+</form>
 </div>
 
 </body>

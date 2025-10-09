@@ -134,6 +134,7 @@ a {
         <a href="attendance.php">📅 Attendance</a>
         <a href="results.php">📊 Results</a>
         <a href="profile.php">👤 Profile</a>
+        <a href="change_password.php">🔑 Change Password</a>
         <a href="logout.php" class="logout">🚪 Logout</a>
     </div>
 

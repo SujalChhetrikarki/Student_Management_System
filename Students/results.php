@@ -18,15 +18,29 @@ $stmt->execute();
 $student = $stmt->get_result()->fetch_assoc();
 $class_id = $student['class_id'];
 
-// ✅ Fetch approved results of this student
-$stmt_res = $conn->prepare("
+// ✅ Get selected term from dropdown
+$selected_term = $_GET['term'] ?? '';
+
+// ✅ Fetch approved results of this student, optionally filter by term
+$query = "
 SELECT r.marks_obtained, r.average_marks, e.exam_date, e.term, sub.subject_name
 FROM results r
 JOIN exams e ON r.exam_id=e.exam_id
 JOIN subjects sub ON e.subject_id=sub.subject_id
 WHERE r.student_id=? AND r.status='Approved'
-ORDER BY e.term, e.exam_date");
-$stmt_res->bind_param("s", $student_id);
+";
+if($selected_term != '') {
+    $query .= " AND e.term = ?";
+}
+$query .= " ORDER BY e.term, e.exam_date";
+
+if($selected_term != '') {
+    $stmt_res = $conn->prepare($query);
+    $stmt_res->bind_param("ss", $student_id, $selected_term);
+} else {
+    $stmt_res = $conn->prepare($query);
+    $stmt_res->bind_param("s", $student_id);
+}
 $stmt_res->execute();
 $results = $stmt_res->get_result();
 
@@ -59,7 +73,7 @@ $rank = 0;
 $position = 0;
 $total_students = $class_results->num_rows;
 
-// ✅ Assign rank (simple ranking, not handling ties)
+// ✅ Assign rank (simple ranking)
 while($row = $class_results->fetch_assoc()) {
     $rank++;
     if($row['student_id'] == $student_id) {
@@ -67,6 +81,24 @@ while($row = $class_results->fetch_assoc()) {
         break;
     }
 }
+
+// ✅ Fetch distinct terms for this student
+$stmt_terms = $conn->prepare("
+    SELECT DISTINCT e.term 
+    FROM results r
+    JOIN exams e ON r.exam_id = e.exam_id
+    WHERE r.student_id = ? AND r.status='Approved'
+    ORDER BY e.term
+");
+$stmt_terms->bind_param("s", $student_id);
+$stmt_terms->execute();
+$terms_result = $stmt_terms->get_result();
+
+$terms = [];
+while($t = $terms_result->fetch_assoc()){
+    $terms[] = $t['term'];
+}
+$stmt_terms->close();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -177,7 +209,7 @@ tfoot td {
         padding: 0;
     }
     .print-btn {
-        display: none; /* Hide print button */
+        display: none;
     }
     .report-card {
         box-shadow: none;
@@ -187,48 +219,68 @@ tfoot td {
     }
 }
 .sidebar {
-            width: 220px;
-            background: #00bfff;
-            height: 100vh;
-            position: fixed;
-            top: 0; left: 0;
-            padding: 20px 15px;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-        }
-        .sidebar h2 {
-            color: #fff;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .sidebar a {
-            display: block;
-            color: #fff;
-            padding: 12px;
-            margin: 8px 0;
-            text-decoration: none;
-            border-radius: 6px;
-            transition: background 0.3s;
-        }
-        .sidebar a:hover {
-            background: rgba(255,255,255,0.2);
-        }
+    width: 220px;
+    background: #00bfff;
+    height: 100vh;
+    position: fixed;
+    top: 0; left: 0;
+    padding: 20px 15px;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+}
+.sidebar h2 {
+    color: #fff;
+    text-align: center;
+    margin-bottom: 30px;
+}
+.sidebar a {
+    display: block;
+    color: #fff;
+    padding: 12px;
+    margin: 8px 0;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: background 0.3s;
+}
+.sidebar a:hover {
+    background: rgba(255,255,255,0.2);
+}
+.date-form select {
+    padding: 5px 10px;
+    border-radius: 5px;
+}
 </style>
 </head>
 <body>
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <h2>📚 Dashboard</h2>
-        <a href="student_dashboard.php">🏠 Home</a>
-        <a href="attendance.php">📅 Attendance</a>
-        <a href="results.php">📊 Results</a>
-        <a href="profile.php">👤 Profile</a>
-        <a href="logout.php" class="logout">🚪 Logout</a>
-    </div>
+<!-- Sidebar -->
+<div class="sidebar">
+    <h2>📚 Dashboard</h2>
+    <a href="student_dashboard.php">🏠 Home</a>
+    <a href="attendance.php">📅 Attendance</a>
+    <a href="results.php">📊 Results</a>
+    <a href="profile.php">👤 Profile</a>
+    <a href="change_password.php">🔑 Change Password</a>
+    <a href="logout.php" class="logout">🚪 Logout</a>
+</div>
+
 <div class="report-card">
     <div class="school-header">
         <h1>Dignity Academy</h1>
         <p>Excellence in Education | Kathmandu, Nepal</p>
     </div>
+
+    <!-- Term Filter Dropdown -->
+    <form method="GET" class="date-form" style="margin-bottom: 15px;">
+        <input type="hidden" name="class_id" value="<?= htmlspecialchars($class_id) ?>">
+        <label><strong>Select Term:</strong></label>
+        <select name="term" onchange="this.form.submit()">
+            <option value="">All Terms</option>
+            <?php foreach($terms as $term_option): ?>
+                <option value="<?= htmlspecialchars($term_option) ?>" <?= ($selected_term == $term_option) ? 'selected' : '' ?>>
+                    <?= htmlspecialchars($term_option) ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+    </form>
 
     <div class="student-info">
         <p><strong>Student Name:</strong> <?= htmlspecialchars($student['name']) ?></p>

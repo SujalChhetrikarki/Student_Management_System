@@ -158,7 +158,7 @@ header h1 {
 <body>
 
 <header>
-    <h1>👨‍🏫 Teacher Dashboard</h1>
+    <h1>Teacher Dashboard</h1>
     <a href="logout.php" class="logout-btn">Logout</a>
 </header>
 
@@ -259,7 +259,9 @@ header h1 {
         <p>No subjects assigned yet.</p>
     <?php endif; ?>
 </div>
-
+<td>
+    <a class="btn" href="change_password.php">Change Password</a>
+</td>
 </div>
 </body>
 </html>

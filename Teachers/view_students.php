@@ -94,21 +94,26 @@ $students = $stmtStudents->get_result();
             padding: 20px;
             text-align: center;
         }
+        header { background: #0066cc; color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; }
+header h1 { margin: 0; font-size: 24px; }
+header a.logout-btn { background: #dc3545; color: white; padding: 8px 15px; border-radius: 6px; text-decoration: none; font-weight: bold; }
+header a.logout-btn:hover { background: #b02a37; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>👨‍🏫 Students</h1>
-    </div>
+<header>
+    <h1>Students</h1>
+    <a href="logout.php" class="logout-btn">Logout</a>
+</header>
 
     <div class="container">
-        <h2>👨‍🎓 Students in <?= htmlspecialchars($class_name); ?> (ID: <?= htmlspecialchars($class_id); ?>)</h2>
+        <h2>Students in <?= htmlspecialchars($class_name); ?> (ID: <?= htmlspecialchars($class_id); ?>)</h2>
 
         <?php if ($students->num_rows > 0): ?>
             <ul>
                 <?php while ($row = $students->fetch_assoc()): ?>
-                    <li>✅ <?= htmlspecialchars($row['name']); ?> <small>(ID: <?= $row['student_id']; ?>)</small></li>
+                    <li><?= htmlspecialchars($row['name']); ?> <small>(ID: <?= $row['student_id']; ?>)</small></li>
                 <?php endwhile; ?>
             </ul>
         <?php else: ?>

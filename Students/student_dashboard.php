@@ -7,12 +7,12 @@ if (!isset($_SESSION['student_id'])) {
 
 include '../Database/db_connect.php';
 
-// Check DB connection
+// ✅ Check DB connection
 if (!$conn) {
     die("Database connection failed: " . mysqli_connect_error());
 }
 
-// Fetch Notices
+// ✅ Fetch Notices
 $notice_sql = "
     SELECT title, message, created_at 
     FROM notices 
@@ -22,7 +22,7 @@ $notice_sql = "
 ";
 $notices = $conn->query($notice_sql);
 
-// Fetch student info
+// ✅ Fetch student info
 $sql = "SELECT s.student_id, s.name, s.email, s.date_of_birth, s.gender, c.class_name
         FROM students s
         LEFT JOIN classes c ON s.class_id = c.class_id
@@ -34,7 +34,7 @@ $result = $stmt->get_result();
 $student = $result->fetch_assoc();
 $stmt->close();
 
-// Fetch attendance summary
+// ✅ Fetch attendance summary
 $attendance_sql = "SELECT date, status FROM attendance WHERE student_id = ? ORDER BY date ASC";
 $stmt2 = $conn->prepare($attendance_sql);
 $attendance_data = [];
@@ -172,6 +172,7 @@ $conn->close();
         <a href="attendance.php">📅 Attendance</a>
         <a href="results.php">📊 Results</a>
         <a href="profile.php">👤 Profile</a>
+        <a href="change_password.php">🔑 Change Password</a>
         <a href="logout.php" class="logout">🚪 Logout</a>
     </div>
 
@@ -207,7 +208,6 @@ $conn->close();
             }
             ?>
         </div>
-
-
+    </div>
 </body>
 </html>
