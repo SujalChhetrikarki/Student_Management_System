@@ -21,7 +21,7 @@ if (!$result) {
     <title>Manage Teachers</title>
     <style>
         body { font-family: Arial; background: #f1f1f1; margin: 0; padding: 0; }
-        
+
         /* Sidebar */
         .sidebar { 
             width: 220px; 
@@ -55,7 +55,7 @@ if (!$result) {
 
         /* Content */
         .container { 
-            margin-left: 240px;  /* ✅ Prevents overlap with sidebar */
+            margin-left: 240px; 
             max-width: calc(100% - 240px); 
             padding: 20px; 
         }
@@ -66,6 +66,11 @@ if (!$result) {
         th { background: #00bfff; color: #fff; }
         a.btn { padding: 5px 10px; background: #00bfff; color: #fff; text-decoration: none; border-radius: 5px; }
         a.btn:hover { background: #0056b3; }
+        a.action-btn { padding: 6px 12px; border-radius:5px; text-decoration:none; margin-right:5px; }
+        a.edit-btn { background: #ffc107; color: #111; }
+        a.edit-btn:hover { background: #e0a800; }
+        a.delete-btn { background: #dc3545; color: #fff; }
+        a.delete-btn:hover { background: #c82333; }
     </style>
 </head>
 <body>
@@ -107,34 +112,25 @@ if (!$result) {
                 $tid = $teacher['teacher_id'];
                 $is_class_teacher = $teacher['is_class_teacher'] ? "✅" : "❌";
 
-                // Fetch assigned classes
-                $sql_classes = "SELECT c.class_name 
-                                FROM class_teachers ct 
-                                JOIN classes c ON ct.class_id = c.class_id 
-                                WHERE ct.teacher_id = ?";
-                $stmt_classes = $conn->prepare($sql_classes);
-                $stmt_classes->bind_param("s", $tid);
-                $stmt_classes->execute();
-                $res_classes = $stmt_classes->get_result();
-                $classes_arr = [];
-                while ($c = $res_classes->fetch_assoc()) {
-                    $classes_arr[] = $c['class_name'];
-                }
-                $classes_str = !empty($classes_arr) ? implode(", ", $classes_arr) : "-";
+                // Fetch assigned classes & subjects from class_subject_teachers
+                $sql_class_subjects = "SELECT c.class_name, s.subject_name
+                                       FROM class_subject_teachers cst
+                                       JOIN classes c ON cst.class_id = c.class_id
+                                       JOIN subjects s ON cst.subject_id = s.subject_id
+                                       WHERE cst.teacher_id = ?";
+                $stmt_cs = $conn->prepare($sql_class_subjects);
+                $stmt_cs->bind_param("s", $tid);
+                $stmt_cs->execute();
+                $res_cs = $stmt_cs->get_result();
 
-                // Fetch assigned subjects
-                $sql_subjects = "SELECT s.subject_name 
-                                 FROM teacher_subjects ts 
-                                 JOIN subjects s ON ts.subject_id = s.subject_id 
-                                 WHERE ts.teacher_id = ?";
-                $stmt_subjects = $conn->prepare($sql_subjects);
-                $stmt_subjects->bind_param("s", $tid);
-                $stmt_subjects->execute();
-                $res_subjects = $stmt_subjects->get_result();
+                $classes_arr = [];
                 $subjects_arr = [];
-                while ($s = $res_subjects->fetch_assoc()) {
-                    $subjects_arr[] = $s['subject_name'];
+                while ($row = $res_cs->fetch_assoc()) {
+                    if (!in_array($row['class_name'], $classes_arr)) $classes_arr[] = $row['class_name'];
+                    if (!in_array($row['subject_name'], $subjects_arr)) $subjects_arr[] = $row['subject_name'];
                 }
+
+                $classes_str = !empty($classes_arr) ? implode(", ", $classes_arr) : "-";
                 $subjects_str = !empty($subjects_arr) ? implode(", ", $subjects_arr) : "-";
                 ?>
 
@@ -147,22 +143,14 @@ if (!$result) {
                     <td><?= htmlspecialchars($classes_str) ?></td>
                     <td><?= htmlspecialchars($subjects_str) ?></td>
                     <td>
-    <a href="edit_teacher.php?teacher_id=<?= urlencode($tid) ?>" 
-       style="background:#ffc107; color:#111; padding:6px 12px; border-radius:5px; text-decoration:none; margin-right:5px;">
-       ✏ Edit
-    </a>
-
-    <a href="delete_teacher.php?teacher_id=<?= urlencode($tid) ?>" 
-       style="background:#dc3545; color:#fff; padding:6px 12px; border-radius:5px; text-decoration:none;" 
-       onclick="return confirm('Are you sure?')">
-       🗑 Delete
-    </a>
-</td>
-
+                        <a href="edit_teacher.php?teacher_id=<?= urlencode($tid) ?>" class="action-btn edit-btn">✏ Edit</a>
+                        <a href="delete_teacher.php?teacher_id=<?= urlencode($tid) ?>" class="action-btn delete-btn" onclick="return confirm('Are you sure?')">🗑 Delete</a>
+                    </td>
                 </tr>
 
             <?php endwhile; ?>
         </table>
     </div>
+
 </body>
 </html>
