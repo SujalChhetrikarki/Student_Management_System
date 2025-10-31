@@ -65,66 +65,115 @@ while ($s = $subjectQuery->fetch_assoc()) {
 <meta charset="UTF-8">
 <title>Edit Teacher</title>
 <style>
+<style>
 /* Global */
-* { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
-body { background: #f4f6f9; display: flex; min-height: 100vh; }
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
 
-/* Sidebar */
-.sidebar { width: 220px; background: #111; color: #fff; height: 100vh; position: fixed; top: 0; left: 0; padding-top: 20px; }
-.sidebar h2 { text-align:center; color:#00bfff; margin-bottom:30px; font-size:20px; }
-.sidebar a { display:block; padding:10px 20px; margin:6px 15px; background:#222; color:#fff; text-decoration:none; border-radius:6px; transition:0.3s; }
-.sidebar a:hover { background:#00bfff; color:#111; }
-.sidebar a.logout { background:#dc3545; }
-.sidebar a.logout:hover { background:#ff4444; color:#fff; }
+body {
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    align-items: center;
+}
 
-/* Header */
-#header { position: fixed; top: 0; left: 220px; right: 0; height: 45px; background: #00bfff; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.1); z-index: 100; }
+/* Header (now full width) */
+#header {
+    width: 100%;
+    height: 60px;
+    background: #00bfff;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: bold;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+}
 
-/* Container */
-.container { max-width: 850px; width: 100%; background: #fff; padding: 25px 30px; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); margin: 60px auto 40px auto; }
-.container h2 { text-align:center; margin-bottom:25px; color:#333; }
+/* Container centered below header */
+.container {
+    background: #fff;
+    padding: 35px 40px;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    width: 900px;
+    margin-top: 100px; /* below header */
+    margin-bottom: 40px;
+    animation: fadeIn 0.8s ease-in-out;
+}
 
-/* Form Styling */
-form label { display:block; margin-top:12px; font-weight:bold; color:#555; }
-form input, form select, form button { font-family: inherit; }
-form input, form select { width:100%; padding:10px; margin-top:5px; border-radius:6px; border:1px solid #ccc; font-size:14px; }
-form input[type="checkbox"] { width:auto; margin-right:8px; }
-form button { width:100%; padding:12px; margin-top:20px; background:#00bfff; color:#fff; font-size:16px; font-weight:bold; border:none; border-radius:8px; cursor:pointer; transition:0.3s; }
-form button:hover { background:#007bb5; }
+.container h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #333;
+}
 
 /* Messages */
 .msg { text-align:center; margin-bottom:15px; font-weight:bold; }
 .error { color:#dc3545; }
 .success { color:#28a745; }
 
-/* Notes */
-.note { font-size:12px; color:#555; margin-top:5px; }
+/* Form styling */
+form label { display:block; margin-top:15px; font-weight:bold; color:#555; }
+form input, form select {
+    width:100%;
+    padding:12px;
+    margin-top:8px;
+    border-radius:8px;
+    border:1px solid #ccc;
+    font-size:14px;
+    transition: 0.3s;
+}
+form input:focus, form select:focus {
+    border:1px solid #4facfe;
+    box-shadow: 0 0 8px rgba(79,172,254,0.3);
+}
+form input[type="checkbox"] { width:auto; margin-right:8px; }
 
-/* Subjects grid */
-.subjects-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top:5px; }
-.subjects-grid label { font-weight: normal; }
+form button {
+    width:100%;
+    padding:14px;
+    margin-top:25px;
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    color:#fff;
+    font-size:16px;
+    font-weight:bold;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    transition:0.3s;
+}
+form button:hover {
+    background: linear-gradient(135deg, #00f2fe, #4facfe);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
 
-/* class-subject box */
-.class-box { border:1px solid #e0e0e0; padding:10px; border-radius:6px; margin-bottom:10px; background:#fafafa; }
-.class-box .class-title { font-weight:bold; margin-bottom:6px; }
-.class-box .subjects-list label { display:block; font-weight:normal; margin-bottom:3px; }
+/* Subjects section */
+.class-box {
+    border:1px solid #ddd;
+    padding:15px;
+    border-radius:10px;
+    margin-bottom:15px;
+    background:#f9f9f9;
+}
+.class-title { font-weight:bold; margin-bottom:10px; }
+.subjects-list label { display:block; font-weight:normal; margin-bottom:5px; }
+
+/* Animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 </style>
 </head>
 <body>
 
-<div class="sidebar">
-    <h2>Admin Panel</h2>
-    <a href="../index.php">🏠 Home</a>
-        <a href="../Manage_student/Managestudent.php">📚 Manage Students</a>
-        <a href="./Teachersshow.php">👨‍🏫 Manage Teachers</a>
-        <a href="../Classes/classes.php">🏫 Manage Classes</a>
-        <a href="../subjects.php">📖 Manage Subjects</a>
-        <a href="../add_student.php">➕ Add Student</a>
-        <a href="../add_teacher.php">➕ Add Teacher</a>
-        <a href="../Add_exam/add_exam.php">➕ Add Exam</a>
-        <a href="../admin_approve_results.php">✅ Approve Results</a>
-        <a href="../logout.php" class="logout">🚪 Logout</a>
-</div>
 
 <div id="header">Edit Teacher</div>
 
@@ -193,6 +242,7 @@ form button:hover { background:#007bb5; }
         </div>
 
         <button type="submit">💾 Update Teacher</button>
+        <a href="Teachersshow.php" style="display:block; text-align:center; margin-top:15px; color:#007bff; text-decoration:none;">← Back to Teacher List</a>
     </form>
 </div>
 

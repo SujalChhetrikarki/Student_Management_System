@@ -101,7 +101,6 @@ if (!$result) {
                         <a class="btn-sm" href="edit_class.php?id=<?= $row['class_id']; ?>">✏ Edit</a>
                         <a class="btn-sm danger" href="delete_class.php?id=<?= $row['class_id']; ?>" onclick="return confirm('Delete this class?')">🗑 Delete</a>
                         <a class="btn-sm" href="view_students.php?id=<?= $row['class_id']; ?>">👨‍🎓 Students</a>
-                        <a class="btn-sm" href="view_subjects.php?id=<?= $row['class_id']; ?>">📖 Subjects</a>
                     </td>
                 </tr>
             <?php endwhile; ?>

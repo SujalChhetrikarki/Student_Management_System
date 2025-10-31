@@ -50,7 +50,100 @@ $total_students = $result->num_rows;
 <head>
     <meta charset="UTF-8">
     <title>View Students</title>
-    <link rel="stylesheet" href="classes.css">
+<style>
+/* Global */
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+
+body {
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    display: flex;
+    justify-content: center;
+    padding: 50px 0;
+    min-height: 100vh;
+}
+
+.container {
+    background: #fff;
+    padding: 30px 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    width: 90%;
+    max-width: 1000px;
+    animation: fadeIn 0.8s ease-in-out;
+}
+
+h1 {
+    margin-bottom: 15px;
+    text-align: center;
+    color: #333;
+}
+
+p { margin: 5px 0 15px; font-size: 16px; color: #555; }
+
+.btn {
+    display: inline-block;
+    padding: 10px 18px;
+    background: #4facfe;
+    color: #fff;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s;
+    margin-bottom: 15px;
+}
+
+.btn:hover {
+    background: #007bff;
+    transform: translateY(-2px);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+thead {
+    background: #4facfe;
+    color: white;
+}
+
+th, td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+    font-size: 15px;
+}
+
+tr:hover { background: #f1f1f1; }
+
+.btn-sm {
+    padding: 8px 12px;
+    font-size: 14px;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 6px;
+    transition: 0.3s;
+    display: inline-block;
+}
+
+.danger {
+    background: #ff4d4d;
+    color: #fff;
+}
+
+.danger:hover {
+    background: #e60000;
+    transform: translateY(-2px);
+}
+
+@keyframes fadeIn {
+    from {opacity: 0; transform: translateY(-10px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+</style>
 </head>
 <body>
 <div class="container">
