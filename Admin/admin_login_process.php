@@ -1,12 +1,23 @@
 <?php
+
+// Extend session lifetime (e.g. 7 days)
+$lifetime = 60 * 60 * 24 * 7; // 7 days
+
+session_set_cookie_params([
+    'lifetime' => $lifetime,
+    'path' => '/',
+    'domain' => '', 
+    'secure' => isset($_SERVER['HTTPS']),
+    'httponly' => true,
+    'samesite' => 'Strict'
+]); 
 session_start();
-include '../Database/db_connect.php'; // make sure this path is correct
+include '../Database/db_connect.php'; 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $admin_id = trim($_POST['admin_id']);
     $password = trim($_POST['password']);
 
-    // Correct table name = admin (not admins)
     $stmt = $conn->prepare("SELECT admin_id, name, password FROM admins WHERE admin_id = ?");
     if (!$stmt) {
         die("SQL Error: " . $conn->error);
@@ -17,12 +28,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $result = $stmt->get_result();
 
     if ($result && $row = $result->fetch_assoc()) {
-        // Verify hashed password
+
         if (password_verify($password, $row['password'])) {
             $_SESSION['admin_id']   = $row['admin_id'];
-            $_SESSION['admin_name'] = $row['name']; // ✅ store admin name
+            $_SESSION['admin_name'] = $row['name'];
 
-            // Redirect to home
             header("Location: index.php");
             exit();
         } else {

@@ -122,8 +122,12 @@ if (!$students) {
                             </td>
                             <td>
                                 <a href="edit_student.php?student_id=<?= $row['student_id']; ?>" class="btn edit">✏ Edit</a>
-                                <a href="delete_student.php?student_id=<?= $row['student_id']; ?>" class="btn delete"
-                                   onclick="return confirm('Are you sure you want to delete <?= htmlspecialchars($row['name']); ?>?');">🗑 Delete</a>
+                               <a href="delete_student.php?student_id=<?= urlencode($row['student_id']); ?>"
+   class="btn delete"
+   onclick="return confirm('Are you sure you want to delete this student?');">
+   🗑 Delete
+</a>
+
                             </td>
                         </tr>
                     <?php endwhile; ?>
