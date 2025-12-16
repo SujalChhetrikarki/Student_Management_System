@@ -54,19 +54,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['attendance'])) {
     }
 
     foreach ($_POST['attendance'] as $student_id => $status) {
-        $stmt = $conn->prepare("
-            INSERT INTO attendance (student_id, class_id, subject_id, date, status)
-            VALUES (?, ?, ?, ?, ?)
-            ON DUPLICATE KEY UPDATE status = VALUES(status)
-        ");
-        $stmt->bind_param("iiiss", $student_id, $class_id, $subject_id, $date, $status);
-        $stmt->execute();
 
-        if ($stmt->error) {
-            echo "<p style='color:red;'>⚠ Error for student ID $student_id: {$stmt->error}</p>";
+        // Validate student_id exists in this class
+        $stmt_check = $conn->prepare("SELECT student_id FROM students WHERE student_id = ? AND class_id = ?");
+        $stmt_check->bind_param("si", $student_id, $class_id);
+        $stmt_check->execute();
+        $res_check = $stmt_check->get_result();
+
+        if($res_check->num_rows > 0){
+            // Insert or update attendance safely
+$stmt_insert = $conn->prepare("
+    INSERT INTO attendance (student_id, class_id, subject_id, date, status)
+    VALUES (?, ?, ?, ?, ?)
+    ON DUPLICATE KEY UPDATE status = VALUES(status)
+");
+$stmt_insert->bind_param("siiss", $student_id, $class_id, $subject_id, $date, $status);
+$stmt_insert->execute();
+
+
+            if ($stmt_insert->error) {
+                echo "<p style='color:red;'>⚠ Error for student ID $student_id: {$stmt_insert->error}</p>";
+            }
+
+            $stmt_insert->close();
+        } else {
+            echo "<p style='color:red;'>⚠ Student ID $student_id does not belong to this class.</p>";
         }
 
-        $stmt->close();
+        $stmt_check->close();
     }
 
     $msg = "✅ Attendance saved successfully!";
@@ -91,6 +106,7 @@ if ($subject_id) {
     $stmt2->bind_param("iisi", $class_id, $subject_id, $date, $class_id);
     $stmt2->execute();
     $attendance = $stmt2->get_result();
+    $stmt2->close();
 }
 ?>
 <!DOCTYPE html>
