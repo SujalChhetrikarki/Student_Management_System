@@ -141,7 +141,7 @@ th { background:#00bfff; }
 
     <h2>📅 Upcoming Exams</h2>
     <table>
-    <tr><th>Exam ID</th><th>Class</th><th>Subject</th><th>Exam Date</th><th>Max Marks</th><th>Term</th></tr>
+    <tr><th>Exam ID</th><th>Class</th><th>Subject</th><th>Exam Date</th><th>Max Marks</th><th>Term</th><th>Edit</th><th>Delete</th></tr>
     <?php if ($exams_result && $exams_result->num_rows > 0): ?>
         <?php while($exam=$exams_result->fetch_assoc()): ?>
         <tr>
@@ -151,6 +151,8 @@ th { background:#00bfff; }
             <td><?= $exam['exam_date'] ?></td>
             <td><?= $exam['max_marks'] ?></td>
             <td><?= $exam['term'] ?></td>
+            <td><a href="edit_exam.php?exam_id=<?= $exam['exam_id'] ?>">Edit</a> </td>
+            <td><a href="delete_exam.php?exam_id=<?= $exam['exam_id'] ?>" onclick="return confirm('Are you sure you want to delete this exam?');">Delete</a></td>
         </tr>
         <?php endwhile; ?>
     <?php else: ?>
