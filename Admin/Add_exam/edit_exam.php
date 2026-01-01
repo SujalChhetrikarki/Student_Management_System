@@ -26,7 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $stmt->bind_param("sii", $exam_date, $max_marks, $exam_id);
 
     if ($stmt->execute()) {
-        header("Location: admin_add_exam.php?msg=" . urlencode("✅ Exam updated successfully!"));
+        header("Location: add_exam.php?msg=" . urlencode("✅ Exam updated successfully!"));
         exit;
     }
 }
