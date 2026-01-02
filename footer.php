@@ -1,3 +1,3 @@
 <footer>
-  <p>© 2025 Student Management System | Jawalakhel, Lalitpur</p>
+  <p style="margin: 0; color: var(--text-secondary);">© 2025 Student Management System | Diversity Academy | Jawalakhel, Lalitpur</p>
 </footer>

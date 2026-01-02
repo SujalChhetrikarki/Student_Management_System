@@ -1,99 +1,442 @@
-/* Reset default margins */
+/* ============================================
+   MODERN STUDENT MANAGEMENT SYSTEM - UI
+   ============================================ */
+
+/* Reset & Base Styles */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+:root {
+  /* Color Palette */
+  --primary: #6366f1;
+  --primary-dark: #4f46e5;
+  --primary-light: #818cf8;
+  --secondary: #10b981;
+  --accent: #f59e0b;
+  --danger: #ef4444;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --info: #3b82f6;
+  
+  /* Neutral Colors */
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --text-light: #94a3b8;
+  --border: #e2e8f0;
+  
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --gradient-success: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  --gradient-hero: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  
+  /* Spacing */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 1.5rem;
+  --spacing-lg: 2rem;
+  --spacing-xl: 3rem;
+  
+  /* Border Radius */
+  --radius-sm: 0.375rem;
+  --radius: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  
+  /* Transitions */
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: all 0.15s ease;
+}
+
 body {
-  font-family: Arial, sans-serif;
-  background: linear-gradient(135deg, #6dd5ed, #2193b0);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* HEADER */
+/* ============================================
+   HEADER
+   ============================================ */
 header {
-  background: #fff;
-  color: #333;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 50px;
-  box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+  padding: 1rem 3rem;
+  box-shadow: var(--shadow);
   position: sticky;
   top: 0;
   z-index: 1000;
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.95);
+  border-bottom: 1px solid var(--border);
 }
 
 header .logo {
-  font-size: 20px;
-  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary);
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+header .logo img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+header .logo:hover {
+  transform: translateY(-2px);
+}
+
+header nav {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
 }
 
 header nav a {
-  margin: 0 15px;
   text-decoration: none;
-  color: #333;
+  color: var(--text-primary);
   font-weight: 500;
-  transition: color 0.3s;
+  font-size: 0.95rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius);
+  transition: var(--transition);
+  position: relative;
+}
+
+header nav a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%) scaleX(0);
+  width: 80%;
+  height: 2px;
+  background: var(--primary);
+  transition: var(--transition);
 }
 
 header nav a:hover {
-  color: #2193b0;
+  color: var(--primary);
+  background: rgba(99, 102, 241, 0.1);
 }
 
-/* MAIN */
+header nav a:hover::after {
+  transform: translateX(-50%) scaleX(1);
+}
+
+/* ============================================
+   MAIN CONTENT
+   ============================================ */
 .container {
   flex: 1;
   text-align: center;
-  padding: 40px 20px;
+  padding: 4rem 2rem;
   color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--gradient-hero);
+  z-index: -1;
+}
+
+.container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100%" height="100%" fill="url(%23grid)"/></svg>');
+  opacity: 0.3;
+  z-index: -1;
 }
 
 h1 {
-  margin-bottom: 30px;
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  animation: fadeInUp 0.8s ease;
 }
 
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+   CARDS
+   ============================================ */
 .cards {
   display: flex;
-  gap: 40px;
+  gap: 2rem;
   justify-content: center;
   flex-wrap: wrap;
+  margin-top: 3rem;
+  animation: fadeInUp 1s ease 0.2s both;
 }
 
 .card {
-  background: white;
-  color: #333;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  color: var(--text-primary);
   text-decoration: none;
-  border-radius: 12px;
-  width: 200px;
-  padding: 20px;
-  transition: transform 0.2s ease;
-  box-shadow: 0px 4px 12px rgba(0,0,0,0.2);
+  border-radius: var(--radius-xl);
+  width: 280px;
+  padding: 2.5rem 2rem;
+  transition: var(--transition);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  position: relative;
+  overflow: hidden;
 }
 
-.card img {
-  width: 100px;
-  height: 100px;
-  object-fit: contain;
-}
-
-.card h2 {
-  margin-top: 15px;
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--gradient-primary);
+  transform: scaleX(0);
+  transition: var(--transition);
 }
 
 .card:hover {
-  transform: scale(1.05);
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: var(--shadow-xl);
 }
 
-/* FOOTER */
+.card:hover::before {
+  transform: scaleX(1);
+}
+
+.card img {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  margin: 0 auto 1.5rem;
+  display: block;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+  transition: var(--transition);
+}
+
+.card:hover img {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.card h2 {
+  margin-top: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary);
+  transition: var(--transition);
+}
+
+.card:hover h2 {
+  color: var(--primary-dark);
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
 footer {
-  background: #fff;
+  background: var(--bg-secondary);
   text-align: center;
-  padding: 15px;
-  color: #333;
-  font-size: 14px;
-  box-shadow: 0px -2px 8px rgba(0,0,0,0.1);
+  padding: 1.5rem;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+  border-top: 1px solid var(--border);
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+.btn {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border-radius: var(--radius);
+  border: none;
+  cursor: pointer;
+  transition: var(--transition);
+  text-decoration: none;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-secondary {
+  background: var(--secondary);
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: #059669;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* ============================================
+   FORMS
+   ============================================ */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 1rem;
+  transition: var(--transition);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* ============================================
+   UTILITIES
+   ============================================ */
+.text-center {
+  text-align: center;
+}
+
+.mt-1 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+.mt-3 { margin-top: 1.5rem; }
+.mt-4 { margin-top: 2rem; }
+
+.mb-1 { margin-bottom: 0.5rem; }
+.mb-2 { margin-bottom: 1rem; }
+.mb-3 { margin-bottom: 1.5rem; }
+.mb-4 { margin-bottom: 2rem; }
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  header {
+    padding: 1rem;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  header nav {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+  }
+  
+  h1 {
+    font-size: 2.5rem;
+  }
+  
+  .cards {
+    gap: 1.5rem;
+  }
+  
+  .card {
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  .container {
+    padding: 2rem 1rem;
+  }
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
 }

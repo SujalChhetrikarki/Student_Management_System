@@ -62,105 +62,193 @@ $conn->close();
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Student Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - Student Management System</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body {
+        * {
             margin: 0;
-            font-family: 'Segoe UI', sans-serif;
-            background: #f8f9fc;
-            color: #333;
+            padding: 0;
+            box-sizing: border-box;
         }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: #1e293b;
+            min-height: 100vh;
+        }
+        
         .sidebar {
-            width: 220px;
-            background: #00bfff;
+            width: 260px;
+            background: linear-gradient(180deg, #4facfe 0%, #00f2fe 100%);
             height: 100vh;
             position: fixed;
-            top: 0; left: 0;
-            padding: 20px 15px;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            top: 0;
+            left: 0;
+            padding: 2rem 1.5rem;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+            z-index: 100;
         }
+        
         .sidebar h2 {
             color: #fff;
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 2rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         }
+        
         .sidebar a {
-            display: block;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
             color: #fff;
-            padding: 12px;
-            margin: 8px 0;
+            padding: 1rem;
+            margin: 0.5rem 0;
             text-decoration: none;
-            border-radius: 6px;
-            transition: background 0.3s;
+            border-radius: 0.75rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
         }
+        
         .sidebar a:hover {
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
+        
+        .sidebar a.logout {
+            margin-top: 2rem;
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .sidebar a.logout:hover {
+            background: rgba(239, 68, 68, 0.3);
+        }
+        
         .main {
-            margin-left: 240px;
-            padding: 30px;
+            margin-left: 260px;
+            padding: 2rem;
         }
+        
         .header {
-            background: #00bfff;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
             color: #fff;
-            padding: 15px 20px;
-            border-radius: 8px;
-            font-size: 20px;
-            margin-bottom: 20px;
+            padding: 1.5rem 2rem;
+            border-radius: 1rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(79, 172, 254, 0.3);
         }
+        
         .card {
             background: #fff;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
         }
+        
+        .card:hover {
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+        }
+        
         .card h2 {
             margin-top: 0;
-            color: #007bff;
-            font-size: 18px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 8px;
+            color: #4facfe;
+            font-size: 1.5rem;
+            font-weight: 700;
+            border-bottom: 3px solid #e2e8f0;
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
         }
+        
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 12px;
+            margin-top: 1rem;
         }
+        
         th, td {
-            padding: 10px;
-            border-bottom: 1px solid #eee;
+            padding: 1rem;
             text-align: left;
+            border-bottom: 1px solid #e2e8f0;
         }
+        
         th {
-            background: #f1f5fb;
-            color: #333;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            color: #475569;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
+        
+        tr:hover {
+            background: #f8fafc;
+        }
+        
         .notice-card {
-            background: #fdfdfd;
-            border-left: 4px solid #007bff;
-            padding: 12px 15px;
-            margin-bottom: 12px;
-            border-radius: 6px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-left: 4px solid #4facfe;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 2px 8px rgba(79, 172, 254, 0.1);
+            transition: all 0.3s ease;
         }
+        
+        .notice-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(79, 172, 254, 0.2);
+        }
+        
         .notice-card h3 {
-            margin: 0;
-            font-size: 16px;
-            color: #007bff;
+            margin: 0 0 0.5rem 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #4facfe;
         }
+        
         .notice-card p {
-            margin: 5px 0;
-            color: #555;
+            margin: 0.5rem 0;
+            color: #475569;
+            line-height: 1.6;
         }
+        
         .notice-card small {
-            color: #777;
+            color: #64748b;
+            font-size: 0.85rem;
         }
+        
         .chart-container {
-            width: 300px;
-            height: 300px;
-            margin: 0 auto;
+            width: 100%;
+            max-width: 400px;
+            height: 400px;
+            margin: 2rem auto;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            
+            .main {
+                margin-left: 0;
+                padding: 1rem;
+            }
         }
     </style>
 </head>
@@ -204,7 +292,7 @@ $conn->close();
                     echo "</div>";
                 }
             } else {
-                echo "<p>No new notices.</p>";
+                echo "<p style='color: #64748b; text-align: center; padding: 2rem;'>No new notices at this time.</p>";
             }
             ?>
         </div>
